@@ -1,0 +1,16 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>CustomizingTextField.qml</file>
+        <file>CustomizingSpinBox.qml</file>
+        <file>CustomizingRadioButton.qml</file>
+        <file>CustomizingComboBox.qml</file>
+        <file>CustomizingButton.qml</file>
+        <file>HolesConfigration.qml</file>
+        <file>deallocation.js</file>
+    </qresource>
+    <qresource prefix="/images">
+        <file>icons/process_manager.png</file>
+        <file>icons/back.png</file>
+    </qresource>
+</RCC>
