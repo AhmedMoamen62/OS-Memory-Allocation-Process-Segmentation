@@ -3,7 +3,6 @@ import QtQuick.Layouts 1.3
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Dialogs 1.3
-import "deallocation.js" as Ut1
 
 
 Item {
@@ -12,10 +11,7 @@ Item {
     property int holesNum: 0
     property var listOfholes : []
     property var holes: ({type: 'None',id: 'None',processName: 'None',base: 0,size: 0})
-    signal start()
-    onStart: {
-        console.log('All is done !')
-    }
+    signal holesConfigrationFinished()
     function isInt(n){
         return Number(n) === n && n % 1 === 0 && Number(n) !== 0;
     }
@@ -50,12 +46,7 @@ Item {
         }
         Text {
             id: wrongmemsize
-<<<<<<< HEAD:Memory_Segmentation/HolesConfigration.qml
-            text: "Please enter a +ve integer memory size !"
-=======
             text: "Please enter an +ve integer memory size !"
-            font.bold: true
->>>>>>> 0755168f8e0e7faab4f124b933b039034d8ecf36:HolesConfigration.qml
             font.family: "Comic Sans MS"
             Layout.row: 0
             Layout.column: 2
@@ -147,12 +138,7 @@ Item {
         }
         Text {
             id: wrongholebase
-<<<<<<< HEAD:Memory_Segmentation/HolesConfigration.qml
-            text: "Please enter a +ve integer hole base !"
-=======
             text: "Please enter an +ve integer hole base !"
-            font.bold: true
->>>>>>> 0755168f8e0e7faab4f124b933b039034d8ecf36:HolesConfigration.qml
             font.family: "Comic Sans MS"
             Layout.row: 1
             Layout.column: 2
@@ -161,12 +147,7 @@ Item {
         }
         Text {
             id: wrongholesize
-<<<<<<< HEAD:Memory_Segmentation/HolesConfigration.qml
-            text: "Please enter a +ve integer hole size !"
-=======
             text: "Please enter an +ve integer hole size !"
-            font.bold: true
->>>>>>> 0755168f8e0e7faab4f124b933b039034d8ecf36:HolesConfigration.qml
             font.family: "Comic Sans MS"
             Layout.row: 2
             Layout.column: 2
@@ -354,10 +335,6 @@ Item {
         anchors.rightMargin: 30
         visible: false
         onClicked: {
-            ////
-            Ut1.deallocate("rest1")
-            Ut1.deallocate("p1")
-            ////
             for(var i = 0 ; i < holesNum; i++)
             {
                 if(holesdata.get(i).Initial === "Not Inialized")
@@ -367,7 +344,7 @@ Item {
                 }
                 if(i === holesdata.count - 1)
                 {
-                    start()
+                    holesConfigrationFinished()
                 }
             }
         }

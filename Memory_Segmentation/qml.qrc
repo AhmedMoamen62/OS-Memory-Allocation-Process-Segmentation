@@ -8,6 +8,7 @@
         <file>CustomizingButton.qml</file>
         <file>HolesConfigration.qml</file>
         <file>deallocation.js</file>
+        <file>ProcessConfigration.qml</file>
     </qresource>
     <qresource prefix="/images">
         <file>icons/process_manager.png</file>

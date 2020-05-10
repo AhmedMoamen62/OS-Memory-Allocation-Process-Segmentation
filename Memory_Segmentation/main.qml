@@ -9,7 +9,24 @@ Window {
     minimumHeight: 600
     minimumWidth: 800
     title: qsTr("Memory Segmentation")
+    signal processConfigration()
+    onProcessConfigration: {
+        holesconfigration.visible = false
+        processconfigration.visible = true
+    }
     HolesConfigration {
+        id: holesconfigration
         anchors.fill: parent
+        onHolesConfigrationFinished: {
+            processConfigration()
+        }
+    }
+    ProcessConfigration {
+        id: processconfigration
+        visible: false
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.topMargin: parent.height/15
+        anchors.leftMargin: parent.width/15
     }
 }
