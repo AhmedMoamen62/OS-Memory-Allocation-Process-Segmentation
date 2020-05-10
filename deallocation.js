@@ -142,7 +142,8 @@ function deallocate( name) {
 
 function merge()
 {
-    var num = 1
+    var numHole = 1
+    var numRest = 1
 
     for( var i =  memList.length-1 ; i > 0; i--)
     {
@@ -152,8 +153,14 @@ function merge()
             memList.splice(i,1)
         }
     }
-    for(  i = 0 ; i <  memList.length; i++){if(memList[i].Type==="hole" ){
-            memList[i].id = "hole".concat((num++).toString())}}
+
+    //this function's role is to correct id-s after deallocation)
+    for(  i = 0 ; i <  memList.length; i++){
+        if(memList[i].Type==="hole" ){
+            memList[i].id = "hole".concat((numHole++).toString())}
+        if(memList[i].Type==="restricted" ){
+            memList[i].id = "rest".concat((numRest++).toString())}
+    }
 
 }
 
