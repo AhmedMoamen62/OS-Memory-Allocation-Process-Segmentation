@@ -83,7 +83,7 @@ struct = {
     state: "",
     algorithmType: "",
     base:50,
-    size:55
+    size:30
 };
 
 listOfHoles.push(struct);
@@ -95,7 +95,7 @@ var struct = {
     state: "", //new, pending
     algorithmType: "",//firstfit,bestfit
     base:80,//int
-    size:30//int
+    size:20//int
 };
 
 listOfHoles.push(struct);
@@ -385,7 +385,7 @@ function updateMemoryList(segmentStruct,HoleID)
             // Replacing The Hole By segmentStruct
             memList.splice(it,0,segmentStruct);
         }
-         console.log("iterator:"+it);
+        // console.log("iterator:"+it);
         it++;
     }
 }
