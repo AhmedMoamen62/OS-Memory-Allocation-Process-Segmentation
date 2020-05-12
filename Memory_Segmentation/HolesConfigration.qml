@@ -10,10 +10,10 @@ Item {
     property int memSize: 0
     property int holesNum: 0
     property var listOfholes : []
-    property var holes: ({type: 'None',id: 'None',processName: 'None',base: 0,size: 0})
+    property var holes: ({Type: 'None',id: 'None',segmentName: 'None',state: "new",algorithmType: "",base: 0,size: 0})
     signal holesConfigrationFinished()
     function isInt(n){
-        return Number(n) === n && n % 1 === 0 && Number(n) !== 0;
+        return Number(n) === n && n % 1 === 0 && Number(n) !== 0
     }
     ListModel {
         id: holeslist
@@ -22,14 +22,14 @@ Item {
         id: basicsconfigration
         columns: 3
         rows: 3
-        columnSpacing: 20
+        columnSpacing: 10
         rowSpacing: 10
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.topMargin: parent.height*0.075
         anchors.leftMargin: parent.width*0.1
         Text {
-            text: "Memory Size: "
+            text: "Memory Size:"
             font.bold: true
             font.family: "Comic Sans MS"
             Layout.row: 0
@@ -37,7 +37,7 @@ Item {
             color: "orange"
         }
         Text {
-            text: "Numbers of holes: "
+            text: "Numbers of holes:"
             font.bold: true
             font.family: "Comic Sans MS"
             Layout.row: 1
@@ -46,7 +46,7 @@ Item {
         }
         Text {
             id: wrongmemsize
-            text: "Please enter an +ve integer memory size !"
+            text: "Please enter a +ve int memory size !"
             font.family: "Comic Sans MS"
             Layout.row: 0
             Layout.column: 2
@@ -75,6 +75,7 @@ Item {
                 {
                     wrongmemsize.visible = false
                     holeslist.clear()
+                    holesdata.clear()
                     memSize = Number(memorysize.text)
                     holesNum = holesnumber.value
                     for(var i = 0 ; i < holesNum ; i++)
@@ -97,14 +98,14 @@ Item {
         id: holesconfigration
         columns: 3
         rows: 4
-        columnSpacing: 20
+        columnSpacing: 10
         rowSpacing: 10
         anchors.top: basicsconfigration.bottom
         anchors.topMargin: 20
         anchors.left: basicsconfigration.left
         visible: false
         Text {
-            text: "Hole No. : "
+            text: "Hole No. :"
             font.bold: true
             font.family: "Comic Sans MS"
             Layout.row: 0
@@ -112,7 +113,7 @@ Item {
             color: "orange"
         }
         Text {
-            text: "Base : "
+            text: "Base :"
             font.bold: true
             font.family: "Comic Sans MS"
             Layout.row: 1
@@ -120,7 +121,7 @@ Item {
             color: "orange"
         }
         Text {
-            text: "Size : "
+            text: "Size :"
             font.bold: true
             font.family: "Comic Sans MS"
             Layout.row: 2
@@ -138,7 +139,7 @@ Item {
         }
         Text {
             id: wrongholebase
-            text: "Please enter an +ve integer hole base !"
+            text: "Please enter a +ve int hole base !"
             font.family: "Comic Sans MS"
             Layout.row: 1
             Layout.column: 2
@@ -147,7 +148,7 @@ Item {
         }
         Text {
             id: wrongholesize
-            text: "Please enter an +ve integer hole size !"
+            text: "Please enter a +ve int hole size !"
             font.family: "Comic Sans MS"
             Layout.row: 2
             Layout.column: 2
@@ -186,7 +187,7 @@ Item {
                     holeselection.visible = false
                     wrongholebase.visible = false
                     wrongholesize.visible = false
-                    holes.type = "HOLE"
+                    holes.Type = "HOLE"
                     holes.id = holenumbers.currentText
                     holes.base = Number(holebase.text)
                     holes.size = Number(holesize.text)
@@ -194,7 +195,7 @@ Item {
                     holesdata.set(holenumbers.currentIndex,{"HolesName":holenumbers.currentText,
                                         "base":holes.base,
                                         "size":holes.size,
-                                        "Initial":"Inialized"})
+                                        "Initial":"Initialized"})
                 }
                 if(holenumbers.currentIndex == -1)
                 {
@@ -226,7 +227,7 @@ Item {
                 holesdata.append({"HolesName":"Hole "+(i+1),
                                        "base":0,
                                        "size":0,
-                                       "Initial":"Not Inialized"})
+                                       "Initial":"Not Initialized"})
             }
         }
     }
@@ -246,7 +247,7 @@ Item {
             height: textrow.implicitHeight * 1.2
             width: textrow.implicitWidth
             color: {
-                if(styleData.row < holesNum && holesdata.get(styleData.row).Initial === "Inialized")
+                if(styleData.row < holesNum && holesdata.get(styleData.row).Initial === "Initialized")
                 {
                     return "gray"
                 }
@@ -337,7 +338,7 @@ Item {
         onClicked: {
             for(var i = 0 ; i < holesNum; i++)
             {
-                if(holesdata.get(i).Initial === "Not Inialized")
+                if(holesdata.get(i).Initial === "Not Initialized")
                 {
                     holesnotfinished.open()
                     break

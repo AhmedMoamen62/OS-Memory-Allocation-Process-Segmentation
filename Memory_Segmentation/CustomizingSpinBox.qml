@@ -26,8 +26,8 @@ SpinBox {
     up.indicator: Rectangle {
         x: control.mirrored ? 0 : parent.width - width
         height: parent.height
-        implicitWidth: 40
-        implicitHeight: 40
+        implicitWidth: 30
+        implicitHeight: 30
         radius: 3
         color: control.up.pressed ? "white" : "orange"
         border.color: "dark red"
@@ -46,8 +46,8 @@ SpinBox {
     down.indicator: Rectangle {
         x: control.mirrored ? parent.width - width : 0
         height: parent.height
-        implicitWidth: 40
-        implicitHeight: 40
+        implicitWidth: 30
+        implicitHeight: 30
         radius: 3
         color: control.down.pressed ? "white" : "orange"
         border.color: "dark red"
@@ -64,7 +64,7 @@ SpinBox {
     }
 
     background: Rectangle {
-        implicitWidth: 150
+        implicitWidth: 125
         radius: 3
         border.color: "orange"
         color: "black"

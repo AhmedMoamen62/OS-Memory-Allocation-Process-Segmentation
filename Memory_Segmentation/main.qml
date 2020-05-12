@@ -24,9 +24,6 @@ Window {
     ProcessConfigration {
         id: processconfigration
         visible: false
-        anchors.top: parent.top
-        anchors.left: parent.left
-        anchors.topMargin: parent.height/15
-        anchors.leftMargin: parent.width/15
+        anchors.fill: parent
     }
 }

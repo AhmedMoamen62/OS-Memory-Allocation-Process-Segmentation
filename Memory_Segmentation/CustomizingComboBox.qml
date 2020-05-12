@@ -52,7 +52,7 @@ ComboBox {
     }
 
     background: Rectangle {
-        implicitWidth: 150
+        implicitWidth: 125
         implicitHeight: 25
         color: "black"
         border.color: combobox.pressed ? "dark red" : "orange"
