@@ -3,7 +3,6 @@ import QtQuick.Layouts 1.3
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Dialogs 1.3
-import "deallocation.js" as Ut1
 import "memoryManagementAllocation.js" as Mma
 
 
@@ -347,6 +346,7 @@ Item {
         visible: false
         onClicked: {
             ////
+            Mma.deallocate("rest3")
 //            Ut1.deallocate("rest1")
 //            Ut1.deallocate("p1")
             ////

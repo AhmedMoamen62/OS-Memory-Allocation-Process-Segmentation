@@ -14,9 +14,9 @@ struct = {
     id: "p1",
     segmentName: "seg1",
     state: "new",
-    algorithmType: "firstfit",
+    algorithmType: "bestfit",
     base:-1,
-    size:50
+    size:2
 };
 listOfSegments.push(struct);
 
@@ -25,7 +25,7 @@ struct = {
     id: "p1",
     segmentName: "seg2",
     state: "new",
-    algorithmType: "firstfit",
+    algorithmType: "bestfit",
     base:-1,
     size:16
 };
@@ -36,7 +36,7 @@ struct = {
     id: "p1",
     segmentName: "seg3",
     state: "new",
-    algorithmType: "firstfit",
+    algorithmType: "bestfit",
     base:-1,
     size:20
 };
@@ -47,9 +47,9 @@ struct = {
     id: "p1",
     segmentName: "seg4",
     state: "new",
-    algorithmType: "firstfit",
+    algorithmType: "bestfit",
     base:70,
-    size:30
+    size:45
 };
 listOfSegments.push(struct);
 
@@ -107,14 +107,18 @@ var struct = {
 };
 
 listOfHoles.push(struct);
+
+
 //tempHoleList.push(struct);
 
 /* Implmementation of memory initialization-list by pushing to the global list
  * specific number of holes & restricted areas to fill the memory
 */
-function initializeMemory(){
 
-
+/**************************** initializeMemory Function ******************************/
+function initializeMemory()
+{
+    mergeListOfHoles ();
     var currentMemoryLocation=0,holeCounter=0,restCounter=1;
 
     // Sorting holes based on base address
@@ -170,11 +174,9 @@ function initializeMemory(){
            console.log(memList[it].id + "  " + memList[it].base+ "   " + memList[it].size);
         it++;
     }
-
-
 }
 
-
+/**************************** allocateProcess Function ******************************/
 function allocateProcess(listOfSegments)
 {
     var it=0 ;
@@ -208,13 +210,15 @@ function allocateProcess(listOfSegments)
 
 }
 
-
+/**************************** checkValidity Function ******************************/
 function checkValidity()
 {
     var sizeOfTotalHoles = getListSize(listOfHoles);
     var sizeOfTotalSegments = getListSize(listOfSegments);
     var isValid ;
 
+    console.log("sizeOfTotalHoles: "+sizeOfTotalHoles+ "   " +"sizeOfTotalSegments "+sizeOfTotalSegments );
+    //Case of total size of process is greater than total size of Holes then allocate in pendingList if it's a new process
     if(sizeOfTotalSegments > sizeOfTotalHoles)
     {
         //Error Signal will be emitted
@@ -249,6 +253,7 @@ function checkValidity()
         }
         console.log("isValid Vlaue: "+isValid);
 
+        // Case of Allocation is Valid
         if(isValid===1)
         {
             // if the Process came from pendingList then pop it
@@ -261,7 +266,8 @@ function checkValidity()
             allocateProcess(listOfSegments);
 
         }
-        else
+        // Case of Allocation is Invalid
+        else if(isValid===0)
         {
             if(listOfSegments[0].state !=="pending")
             {
@@ -288,6 +294,7 @@ function checkValidity()
 
 }
 
+/**************************** checkFirstFit Function ******************************/
 function checkFirstFit(listOfSegments)
 {
     let tempHoleList = JSON.parse(JSON.stringify(listOfHoles));
@@ -317,6 +324,8 @@ function checkFirstFit(listOfSegments)
     return 1;
 }
 
+
+/**************************** checkBestFit Function ******************************/
 function checkBestFit(listOfSegments)
 {
 
@@ -352,6 +361,8 @@ function checkBestFit(listOfSegments)
     return 1;
 }
 
+
+/**************************** getListSize Function ******************************/
 function getListSize(abstractList)
 {
     var it=0 ;
@@ -364,6 +375,8 @@ function getListSize(abstractList)
     return totalsize;
 }
 
+
+/**************************** bestFitAlgorithm Function ******************************/
 function bestFitAlgorithm(listOfSegments)
 {
     var segItr=0 , holeItr=0;
@@ -402,7 +415,7 @@ function bestFitAlgorithm(listOfSegments)
 
 }
 
-
+/**************************** firstFitAlgorithm Function ******************************/
 function firstFitAlgorithm(listOfSegments)
 {
     var segItr=0 , holeItr=0;
@@ -436,6 +449,7 @@ function firstFitAlgorithm(listOfSegments)
 
 }
 
+/**************************** updateMemoryList Function ******************************/
 function updateMemoryList(segmentStruct,HoleID)
 {
     var tempStruct ;
@@ -475,6 +489,7 @@ function updateMemoryList(segmentStruct,HoleID)
 
 
 
+/**************************** arrangeLists Function ******************************/
 function arrangeLists ()
 {
     listOfHoles.splice(0,listOfHoles.length);
@@ -492,3 +507,85 @@ function arrangeLists ()
 }
 
 
+/******************************************************* DEALLOCATING*********************************************/
+
+function deallocate(name) {
+    console.log(name)
+    for(  var i = 0 ; i < memList.length ; i++)
+    {
+        if(memList[i].id === name)
+        {
+            memList[i].Type = "hole";
+            //memList[i].id = "hole".concat(num.toString()); // concat("hole,listOfHoles.length)
+            memList[i].id="hole"
+            memList[i].processName= "";
+            memList[i].state= "";
+            memList[i].algorithmType= "";
+           // listOfHoles.push(memList[i]);
+         }
+    }
+
+    merge();
+    arrangeLists ()
+
+    if(pendingList.length>0)
+    {
+        let tempList = JSON.parse(JSON.stringify(pendingList[0]));
+
+        listOfSegments=tempList;
+        checkValidity()
+    }
+    print()
+};
+
+function merge()
+{
+    var numHole = 1
+    var numRest = 1
+
+    for( var i =  memList.length-1 ; i > 0; i--)
+    {
+        if(memList[i].Type==="hole" && memList[i-1].Type==="hole")
+        {
+            memList[i-1].size += memList[i].size
+            memList.splice(i,1)
+        }
+    }
+
+    //this function's role is to correct id-s after deallocation)
+    for(  i = 0 ; i <  memList.length; i++){
+        if(memList[i].Type==="hole" ){
+            memList[i].id = "hole".concat((numHole++).toString())}
+        if(memList[i].Type==="restricted" ){
+            memList[i].id = "rest".concat((numRest++).toString())}
+    }
+
+}
+
+function print() {
+
+    for(  var i = 0 ; i < memList.length ; i++)
+    {console.log("id: "+memList[i].id+" base: "+memList[i].base+" size: "+memList[i].size)}
+    console.log("____________")
+}
+
+function mergeListOfHoles ()
+{
+    var it=0 ;
+    var numHole=1;
+    for(it= 0; it<listOfHoles.length-1 ; it++)
+    {
+        if(listOfHoles[it].base+listOfHoles[it].size === listOfHoles[it+1].base)
+        {
+            listOfHoles[it].size+=  listOfHoles[it+1].size;
+            listOfHoles.splice(it+1,1);
+        }
+    }
+
+    //this function's role is to correct id-s after deallocation)
+    for(var  i = 0 ; i <  listOfHoles.length; i++)
+    {
+        if(listOfHoles[i].Type==="hole" ){
+            listOfHoles[i].id = "hole".concat((numHole++).toString())}
+    }
+}
