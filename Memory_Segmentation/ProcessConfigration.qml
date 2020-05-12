@@ -9,12 +9,115 @@ Item {
     id: item
     property int processNum: 0
     property int segmentNum: 0
-    property bool firstFit: true
+    property string fitting
+    property bool firstTime: true
+    property var memorySegments: []
     property ListModel processSegmentsData: ListModel {
     }
-    property var segments: ({Type: 'None',id: 'None',segmentName: 'None',state: "",algorithmType: "First Fit",base: 0,size: 0})
+    property var segments: ({Type: 'None',id: 'None',segmentName: 'None',state: "",algorithmType: "",base: 0,size: 0})
+    signal generateProcessConfigration()
+    onGenerateProcessConfigration: {
+        showDefaultConfigration()
+    }
     function isInt(n){
         return Number(n) === n && n % 1 === 0 && Number(n) !== 0;
+    }
+    function checkSegmentsInitialization()
+    {
+        for(var j = 0 ; j < processSegmentsData.count ; j++)
+        {
+            for(var i = 0 ; i < processSegmentsData.get(j).Process.count; i++)
+            {
+                if(processSegmentsData.get(j).Process.get(i).Segment.Initial === "Not Initialized")
+                {
+                    return false
+                }
+            }
+        }
+        return true
+    }
+    function processConfigrationDisplaying()
+    {
+        segmentsconfigration.visible = false
+        segmentnumber.visible = true
+        segmenttext.visible = true
+        sumbitsegmentNumber.visible = true
+        firstfit.visible = true
+        bestfit.visible = true
+    }
+    function processConfigrationHiding()
+    {
+        segmentnumber.visible = false
+        segmenttext.visible = false
+        sumbitsegmentNumber.visible = false
+        firstfit.visible = false
+        bestfit.visible = false
+    }
+    function showDefaultConfigration()
+    {
+        firstTime = true
+        processSegmentsData.clear()
+        processlist.clear()
+        segmentsname.clear()
+        segmentdata.clear()
+        memorySegments = []
+        processNum = 0
+        segmentNum = 0
+        segmentsconfigration.visible = false
+        segmentnumber.visible = false
+        segmenttext.visible = false
+        sumbitsegmentNumber.visible = false
+        firstfit.visible = false
+        bestfit.visible = false
+    }
+    function refreshTableSegments()
+    {
+        segmentdata.clear()
+        segmentsname.clear()
+        for(var i = 0 ; i < processSegmentsData.get(currentprocess.currentIndex).Process.count ; i++)
+        {
+            segmentsname.append({"name":processSegmentsData.get(currentprocess.currentIndex).Process.get(i).Segment.SegmentName})
+            segmentdata.append({"SegmentName":processSegmentsData.get(currentprocess.currentIndex).Process.get(i).Segment.SegmentName,
+                                   "base":processSegmentsData.get(currentprocess.currentIndex).Process.get(i).Segment.size,
+                                   "size":processSegmentsData.get(currentprocess.currentIndex).Process.get(i).Segment.base,
+                                   "Initial":processSegmentsData.get(currentprocess.currentIndex).Process.get(i).Segment.Initial,
+                                   "state":processSegmentsData.get(currentprocess.currentIndex).Process.get(i).Segment.state})
+        }
+    }
+    function addProcess()
+    {
+        var segmentsDataList = {"SegmentName": "None", "base":0, "size": 0, "Initial": "Not Initialized", "state":"None"}
+        segmentsname.clear()
+        segmentdata.clear()
+        segmentNum = segmentnumber.value
+        for(var j = 0 ;j < segmentNum ; j++)
+        {
+            segmentdata.append({"SegmentName":"Seg "+(j+1),
+                                   "base":0,
+                                   "size":0,
+                                   "Initial":"Not Initialized",
+                                   "state":"None"})
+        }
+        processNum++
+        fitting = firstfit.checked ? "First Fit" : "Best Fit"
+        processlist.append({"name":"P"+processNum})
+        processSegmentsData.append({"Process":[],"Fitting":fitting,"State": "None"})
+        for(var i = 0 ; i < segmentNum ; i++)
+        {
+            segmentsname.append({"name":"Seg "+(i+1)})
+            segmentsDataList.SegmentName = segmentdata.get(i).SegmentName
+            segmentsDataList.base = segmentdata.get(i).base
+            segmentsDataList.size = segmentdata.get(i).size
+            segmentsDataList.Initial = segmentdata.get(i).Initial
+            segmentsDataList.state = segmentdata.get(i).state
+            processSegmentsData.get(processNum - 1).Process.append({"Segment":{"SegmentName":segmentsDataList.SegmentName,
+                                                                               "base":segmentsDataList.base,
+                                                                               "size":segmentsDataList.size,
+                                                                               "Initial":segmentsDataList.Initial,
+                                                                               "state":segmentsDataList.state}})
+        }
+        currentprocess.currentIndex = processNum - 1
+        segmentsconfigration.visible = true
     }
     ListModel {
         id: processlist
@@ -33,8 +136,8 @@ Item {
         rowSpacing: 5
         anchors.top: parent.top
         anchors.left: parent.left
-        anchors.topMargin: parent.height/25
-        anchors.leftMargin: parent.width/15
+        anchors.topMargin: 20
+        anchors.leftMargin: 90
         Text {
             id: segmenttext
             text: "Segments Number:"
@@ -73,12 +176,22 @@ Item {
             Layout.column: 0
             Layout.row: 0
             onClicked: {
-                segmentsconfigration.visible = false
-                segmentnumber.visible = true
-                segmenttext.visible = true
-                sumbitsegmentNumber.visible = true
-                firstfit.visible = true
-                bestfit.visible = true
+                if(firstTime)
+                {
+                    firstTime = false
+                    processConfigrationDisplaying()
+                }
+                else
+                {
+                    if(checkSegmentsInitialization())
+                    {
+                        processConfigrationDisplaying()
+                    }
+                    else
+                    {
+                        segmentsnotfinished.open()
+                    }
+                }
             }
         }
         CustomizingButton {
@@ -88,37 +201,17 @@ Item {
             Layout.row: 3
             visible: false
             onClicked: {
-                var segmentsDataList = {"SegmentName": "None", "base":0, "size": 0, "Initial": "Not Initialized"}
-                segmentsname.clear()
-                segmentdata.clear()
-                segmentNum = segmentnumber.value
-                for(var j = 0 ;j < segmentNum ; j++)
-                {
-                    segmentdata.append({"SegmentName":"Seg "+(j+1),
-                                           "base":0,
-                                           "size":0,
-                                           "Initial":"Not Initialized"})
-                }
-                processNum++
-                firstFit = firstfit.checked
-                processlist.append({"name":"P"+processNum})
-                processSegmentsData.append({"Process":[]})
-                for(var i = 0 ; i < segmentNum ; i++)
-                {
-                    segmentsname.append({"name":"Seg "+(i+1)})
-                    segmentsDataList.SegmentName = segmentdata.get(i).SegmentName
-                    segmentsDataList.base = segmentdata.get(i).base
-                    segmentsDataList.size = segmentdata.get(i).size
-                    segmentsDataList.Initial = segmentdata.get(i).Initial
-                    processSegmentsData.get(processNum - 1).Process.append({"Segment":{"SegmentName":segmentsDataList.SegmentName,
-                                                                                       "base":segmentsDataList.base,
-                                                                                       "size":segmentsDataList.size,
-                                                                                       "Initial":segmentsDataList.Initial}})
-                }
-                currentprocess.currentIndex = processNum - 1
-                segmentsconfigration.visible = true
+                addProcess()
+                processConfigrationHiding()
             }
         }
+    }
+    MessageDialog {
+        id: segmentsnotfinished
+        title: "Segments Initialization"
+        text: "Not All Segments are initialized or there is a wrong base or size, Please check and initialize them"
+        icon: StandardIcon.Information
+        standardButtons: StandardButton.Ok
     }
     GridLayout {
         id: segmentsconfigration
@@ -197,7 +290,7 @@ Item {
         }
         Text {
             id: wrongsegbase
-            text: "Please enter a +ve int segment base !"
+            text: "Please enter a +ve int seg. base"
             font.family: "Comic Sans MS"
             Layout.row: 3
             Layout.column: 2
@@ -206,7 +299,7 @@ Item {
         }
         Text {
             id: wrongsegsize
-            text: "Please enter a +ve int segment size !"
+            text: "Please enter a +ve int seg. size"
             font.family: "Comic Sans MS"
             Layout.row: 4
             Layout.column: 2
@@ -220,16 +313,17 @@ Item {
             Layout.row: 0
             focus: true
             onCurrentIndexChanged: {
-                segmentdata.clear()
-                segmentsname.clear()
-                for(var i = 0 ; i < processSegmentsData.get(currentIndex).Process.count ; i++)
+                if(processSegmentsData.get(currentprocess.currentIndex).State === "None")
                 {
-                    segmentsname.append({"name":processSegmentsData.get(currentIndex).Process.get(i).Segment.SegmentName})
-                    segmentdata.append({"SegmentName":processSegmentsData.get(currentIndex).Process.get(i).Segment.SegmentName,
-                                           "base":processSegmentsData.get(currentIndex).Process.get(i).Segment.size,
-                                           "size":processSegmentsData.get(currentIndex).Process.get(i).Segment.base,
-                                           "Initial":processSegmentsData.get(currentIndex).Process.get(i).Segment.Initial})
+                    initialcolumn.visible = true
+                    statecolumn.visible = false
                 }
+                else
+                {
+                    initialcolumn.visible = false
+                    statecolumn.visible = true
+                }
+                refreshTableSegments()
             }
         }
         CustomizingComboBox {
@@ -274,15 +368,18 @@ Item {
                     segments.segmentName = Number(segmentname.text) !== 0 ? segmentname.text : segmentsname.get(segmentnum.currentIndex).name
                     segments.base = Number(segmentbase.text)
                     segments.size = Number(segmentsize.text)
-                    segments.algorithmType = firstFit ? "Best Fit" : "First Fit"
+                    segments.algorithmType = fitting
                     segmentdata.set(segmentnum.currentIndex,{"SegmentName":segments.segmentName,
                                         "base":segments.base,
                                         "size":segments.size,
-                                        "Initial":"Initialized"})
+                                        "Initial":"Initialized",
+                                        "state":"None"})
                     processSegmentsData.get(currentprocess.currentIndex).Process.set(segmentnum.currentIndex,{"Segment":{"SegmentName":segments.segmentName,
                                                                                        "base":segments.base,
                                                                                        "size":segments.size,
-                                                                                       "Initial":"Initialized"}})
+                                                                                       "Initial":"Initialized",
+                                                                                       "state":"None"}})
+                    memorySegments.push(segments)
                 }
                 if(currentprocess.currentIndex == -1)
                 {
@@ -320,14 +417,24 @@ Item {
             Layout.column: 1
             Layout.row: 5
             onClicked: {
-
+                if(!checkSegmentsInitialization())
+                {
+                    segmentsnotfinished.open()
+                }
+                else
+                {
+                    processSegmentsData.get(currentprocess.currentIndex).State = "Pending"
+                    initialcolumn.visible = false
+                    statecolumn.visible = true
+                    refreshTableSegments()
+                }
             }
         }
     }
     TableView {
         id: segments_table
         width: item.width/2.5
-        height: item.height*0.35
+        height: item.height*0.4
         anchors.bottom: item.bottom
         anchors.right: item.right
         anchors.rightMargin: 10
@@ -339,9 +446,13 @@ Item {
             height: textrow.implicitHeight * 1.2
             width: textrow.implicitWidth
             color: {
-                if(styleData.row < segmentNum && segmentdata.get(styleData.row).Initial === "Initialized")
+                if(styleData.row < segmentNum && segmentdata.get(styleData.row).Initial === "Initialized" && processSegmentsData.get(currentprocess.currentIndex).State === "None")
                 {
                     return "gray"
+                }
+                else if(styleData.row < segmentNum && segmentdata.get(styleData.row).Initial === "Initialized" && processSegmentsData.get(currentprocess.currentIndex).State !== "None")
+                {
+                    return "green"
                 }
                 else
                 {
@@ -408,8 +519,15 @@ Item {
             title: "Size"
         }
         TableViewColumn{
+            id: initialcolumn
             role: "Initial"
             title: "Initialization"
+        }
+        TableViewColumn{
+            id: statecolumn
+            role: "state"
+            title: "State"
+            visible: false
         }
     }
 }

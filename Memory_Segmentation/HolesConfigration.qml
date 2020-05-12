@@ -139,7 +139,7 @@ Item {
         }
         Text {
             id: wrongholebase
-            text: "Please enter a +ve int hole base !"
+            text: "Please enter a +ve int hole base"
             font.family: "Comic Sans MS"
             Layout.row: 1
             Layout.column: 2
@@ -148,7 +148,7 @@ Item {
         }
         Text {
             id: wrongholesize
-            text: "Please enter a +ve int hole size !"
+            text: "Please enter a +ve int hole size"
             font.family: "Comic Sans MS"
             Layout.row: 2
             Layout.column: 2
