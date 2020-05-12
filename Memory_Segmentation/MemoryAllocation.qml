@@ -3,6 +3,7 @@ import QtQuick.Controls 2.5
 
 Item {
     id: memory
+    property int memSize: 0
     property var memList: []
     signal drawMemory()
     onDrawMemory: {
@@ -41,12 +42,12 @@ Item {
                     radius: 10
                     function setWidth()
                     {
-                        height = memory.memList[index].size*memory.height*0.01
+                        height = (memory.memList[index].size/memSize)*memory.height*0.6
                     }
                     function setTexts()
                     {
                         textIdLable.text = memory.memList[index].id
-                        textAddressStart.text = memory.memList[index].startaddress
+                        textAddressStart.text = memory.memList[index].base
                     }
                     Connections {
                         target: memoryRepeater

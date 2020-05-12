@@ -2,6 +2,7 @@ import QtQuick 2.12
 import QtQuick.Window 2.12
 
 Window {
+    id: window
     visible: true
     width: 640
     height: 480
@@ -9,15 +10,28 @@ Window {
     minimumHeight: 600
     minimumWidth: 800
     title: qsTr("Memory Segmentation")
+    property alias memorySize: holesconfigration.memSize
+    property alias processNumber: processconfigration.processNum
+    property alias holesList: holesconfigration.listOfholes
+    property alias selectedProcess: processconfigration.currentProcess
+    property alias memoryList: memory.memList
+    property alias allocateFitting: processconfigration.processFitting
     signal processConfigration()
     onProcessConfigration: {
         holesconfigration.visible = false
         processconfigration.visible = true
         back_rec.visible = true
-        memory.memList.push({id: "seg 1",size: 20,startaddress: 20})
-        memory.memList.push({id: "hole 1",size: 40,startaddress: 60})
-        memory.memList.push({id: "seg 2",size: 20,startaddress: 80})
+        setMemory()
+    }
+    function setMemory()
+    {
+        memoryList = []
+        memoryList.push({id: "seg 1",size: 20,base: 20})
+        memoryList.push({id: "hole 1",size: 40,base: 60})
+        memoryList.push({id: "seg 2",size: 20,base: 80})
+        memory.memSize = memorySize
         memory.drawMemory()
+        memory.visible = true
     }
     HolesConfigration {
         id: holesconfigration
@@ -30,11 +44,83 @@ Window {
         id: processconfigration
         visible: false
         anchors.fill: parent
+        onCallDeallocation: {
+            //deallocatefromJS(process)
+            deallocateProcess()
+        }
     }
     MemoryAllocation {
         id: memory
+        visible: false
         anchors.fill: parent
     }
+    Rectangle{
+        id: memorysize
+        color: "black"
+        width: 140
+        height: 40
+        anchors.left: parent.left
+        anchors.bottom: parent.bottom
+        anchors.leftMargin: 90
+        anchors.bottomMargin: 50
+        radius: width/10
+        border.color: "orange"
+        border.width: 2
+        visible: processconfigration.visible ? true : false
+        Text {
+            anchors.centerIn: parent
+            text: "Memory Size: " + memorySize
+            font.pixelSize: 14
+            color: "orange"
+        }
+    }
+//    Rectangle{
+//        id: noofprocess
+//        color: "black"
+//        width: parent.width/8
+//        height: parent.height/15
+//        anchors.right: processname.left
+//        anchors.verticalCenter: ispreemptive.verticalCenter
+//        anchors.rightMargin: 10
+//        radius: width/10
+//        border.color: "orange"
+//        border.width: 2
+//        visible: false
+//        Text {
+//            anchors.centerIn: parent
+//            text: "Number of process: " + lastconfigration.processnumber
+//            font.pixelSize: parent.width*0.09
+//            color: "orange"
+//        }
+//    }
+//    Rectangle{
+//        id: ispreemptive
+//        color: "black"
+//        width: parent.width/8
+//        height: parent.height/15
+//        anchors.right: parent.right
+//        anchors.rightMargin: 20
+//        anchors.bottom: scheduling.bottom
+//        anchors.bottomMargin: 100
+//        radius: width/10
+//        border.color: "orange"
+//        border.width: 2
+//        visible: false
+//        Text {
+//            anchors.centerIn: parent
+//            text: {
+//                if(lastconfigration.processtype == "Round Robin")
+//                    return "Time Quantum: " + lastconfigration.timeQuantum
+//                else if(lastconfigration.ispreemptive)
+//                    return "Preemptive"
+//                else
+//                    return "Non-Preemptive"
+
+//            }
+//            font.pixelSize: parent.width*0.1
+//            color: "orange"
+//        }
+//    }
     Rectangle {
         id: back_rec
         height: 30

@@ -8,19 +8,87 @@ import QtQml.Models 2.14
 Item {
     id: item
     property int processNum: 0
+    property int processNameNum: 0
     property int segmentNum: 0
+    property string processFitting: ""
     property string fitting
+    property string currentProcess: ""
     property bool firstTime: true
     property var memorySegments: []
     property ListModel processSegmentsData: ListModel {
     }
-    property var segments: ({Type: 'None',id: 'None',segmentName: 'None',state: "",algorithmType: "",base: 0,size: 0})
+    property var segments: ({Type: "",id: "",segmentName: "",state: "",algorithmType: "",base: 0,size: 0})
     signal generateProcessConfigration()
+    signal allocateProcess()
+    signal deallocateProcess()
+    signal callDeallocation(string process)
+    onAllocateProcess: {
+        processSegmentsData.get(currentprocess.currentIndex).State = "Allocated"
+        setSegmentsState("Allocated")
+        refreshTableSegments()
+        showState()
+        showEditProcess()
+    }
+    onDeallocateProcess: {
+        deallocateprocess()
+    }
     onGenerateProcessConfigration: {
         showDefaultConfigration()
     }
     function isInt(n){
         return Number(n) === n && n % 1 === 0 && Number(n) !== 0;
+    }
+    function deallocateprocess()
+    {
+        processSegmentsData.remove(currentprocess.currentIndex)
+        processlist.remove(currentprocess.currentIndex)
+        processNum--
+        if(processNum > 0)
+        {
+            currentprocess.currentIndex = 0
+            refreshTableSegments()
+            hideState()
+            hideEditProcess()
+        }
+        else
+        {
+            showDefaultConfigration()
+        }
+    }
+    function setSegmentsState(state)
+    {
+        for(var i = 0 ; i < processSegmentsData.get(currentprocess.currentIndex).Process.count ; i++)
+        {
+            processSegmentsData.get(currentprocess.currentIndex).Process.set(i,{"Segment":{"SegmentName":processSegmentsData.get(currentprocess.currentIndex).Process.get(i).Segment.SegmentName,
+                                                                               "base":processSegmentsData.get(currentprocess.currentIndex).Process.get(i).Segment.base,
+                                                                               "size":processSegmentsData.get(currentprocess.currentIndex).Process.get(i).Segment.size,
+                                                                               "Initial":processSegmentsData.get(currentprocess.currentIndex).Process.get(i).Segment.Initial,
+                                                                               "state":state}})
+        }
+    }
+    function showEditProcess()
+    {
+        editprocess.visible = true
+        deleteprocess.visible = true
+        submitsegment.visible = false
+        allocateprocess.visible = false
+    }
+    function hideEditProcess()
+    {
+        editprocess.visible = false
+        deleteprocess.visible = false
+        submitsegment.visible = true
+        allocateprocess.visible = true
+    }
+    function showState()
+    {
+        initialcolumn.visible = false
+        statecolumn.visible = true
+    }
+    function hideState()
+    {
+        initialcolumn.visible = true
+        statecolumn.visible = false
     }
     function checkSegmentsInitialization()
     {
@@ -47,6 +115,7 @@ Item {
     }
     function processConfigrationHiding()
     {
+        segmentsconfigration.visible = true
         segmentnumber.visible = false
         segmenttext.visible = false
         sumbitsegmentNumber.visible = false
@@ -62,6 +131,7 @@ Item {
         segmentdata.clear()
         memorySegments = []
         processNum = 0
+        processNameNum = 0
         segmentNum = 0
         segmentsconfigration.visible = false
         segmentnumber.visible = false
@@ -78,8 +148,8 @@ Item {
         {
             segmentsname.append({"name":processSegmentsData.get(currentprocess.currentIndex).Process.get(i).Segment.SegmentName})
             segmentdata.append({"SegmentName":processSegmentsData.get(currentprocess.currentIndex).Process.get(i).Segment.SegmentName,
-                                   "base":processSegmentsData.get(currentprocess.currentIndex).Process.get(i).Segment.size,
-                                   "size":processSegmentsData.get(currentprocess.currentIndex).Process.get(i).Segment.base,
+                                   "base":processSegmentsData.get(currentprocess.currentIndex).Process.get(i).Segment.base,
+                                   "size":processSegmentsData.get(currentprocess.currentIndex).Process.get(i).Segment.size,
                                    "Initial":processSegmentsData.get(currentprocess.currentIndex).Process.get(i).Segment.Initial,
                                    "state":processSegmentsData.get(currentprocess.currentIndex).Process.get(i).Segment.state})
         }
@@ -99,8 +169,9 @@ Item {
                                    "state":"None"})
         }
         processNum++
+        processNameNum++
         fitting = firstfit.checked ? "First Fit" : "Best Fit"
-        processlist.append({"name":"P"+processNum})
+        processlist.append({"name":"P"+processNameNum})
         processSegmentsData.append({"Process":[],"Fitting":fitting,"State": "None"})
         for(var i = 0 ; i < segmentNum ; i++)
         {
@@ -117,7 +188,7 @@ Item {
                                                                                "state":segmentsDataList.state}})
         }
         currentprocess.currentIndex = processNum - 1
-        segmentsconfigration.visible = true
+        currentProcess = currentprocess.currentText
     }
     ListModel {
         id: processlist
@@ -133,7 +204,7 @@ Item {
         columns: 2
         rows: 4
         columnSpacing: 5
-        rowSpacing: 5
+        rowSpacing: 10
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.topMargin: 20
@@ -216,9 +287,9 @@ Item {
     GridLayout {
         id: segmentsconfigration
         columns: 3
-        rows: 6
+        rows: 7
         columnSpacing: 5
-        rowSpacing: 5
+        rowSpacing: 10
         anchors.top: basicsconfigration.bottom
         anchors.left: basicsconfigration.left
         anchors.topMargin: 10
@@ -315,15 +386,16 @@ Item {
             onCurrentIndexChanged: {
                 if(processSegmentsData.get(currentprocess.currentIndex).State === "None")
                 {
-                    initialcolumn.visible = true
-                    statecolumn.visible = false
+                    hideEditProcess()
+                    hideState()
                 }
                 else
                 {
-                    initialcolumn.visible = false
-                    statecolumn.visible = true
+                    showEditProcess()
+                    showState()
                 }
                 refreshTableSegments()
+                currentProcess = currentText
             }
         }
         CustomizingComboBox {
@@ -412,22 +484,40 @@ Item {
             }
         }
         CustomizingButton {
-            id: submitprocess
+            id: allocateprocess
             text: "Allocate Process"
             Layout.column: 1
             Layout.row: 5
             onClicked: {
-                if(!checkSegmentsInitialization())
+                if(checkSegmentsInitialization())
                 {
-                    segmentsnotfinished.open()
+                    processFitting = processSegmentsData.get(currentprocess.currentIndex).Fitting
+                    allocateProcess()
                 }
                 else
                 {
-                    processSegmentsData.get(currentprocess.currentIndex).State = "Pending"
-                    initialcolumn.visible = false
-                    statecolumn.visible = true
-                    refreshTableSegments()
+                    segmentsnotfinished.open()
                 }
+            }
+        }
+        CustomizingButton {
+            id: editprocess
+            text: "Edit"
+            Layout.column: 0
+            Layout.row: 6
+            visible: false
+            onClicked: {
+
+            }
+        }
+        CustomizingButton {
+            id: deleteprocess
+            text: "Deallcote"
+            Layout.column: 1
+            Layout.row: 6
+            visible: false
+            onClicked: {
+                callDeallocation(currentprocess.currentText)
             }
         }
     }
@@ -446,13 +536,17 @@ Item {
             height: textrow.implicitHeight * 1.2
             width: textrow.implicitWidth
             color: {
-                if(styleData.row < segmentNum && segmentdata.get(styleData.row).Initial === "Initialized" && processSegmentsData.get(currentprocess.currentIndex).State === "None")
+                if(styleData.row < segmentNum && segmentdata.get(styleData.row).Initial === "Initialized" && segmentdata.get(styleData.row).state === "None")
                 {
                     return "gray"
                 }
-                else if(styleData.row < segmentNum && segmentdata.get(styleData.row).Initial === "Initialized" && processSegmentsData.get(currentprocess.currentIndex).State !== "None")
+                else if(styleData.row < segmentNum && segmentdata.get(styleData.row).Initial === "Initialized" && segmentdata.get(styleData.row).state === "Allocated")
                 {
                     return "green"
+                }
+                else if(styleData.row < segmentNum && segmentdata.get(styleData.row).Initial === "Initialized" && segmentdata.get(styleData.row).state === "Pending")
+                {
+                    return "red"
                 }
                 else
                 {

@@ -10,7 +10,7 @@ Item {
     property int memSize: 0
     property int holesNum: 0
     property var listOfholes : []
-    property var holes: ({Type: 'None',id: 'None',segmentName: 'None',state: "new",algorithmType: "",base: 0,size: 0})
+    property var holes: ({Type: "",id: "",segmentName: "",state: "new",algorithmType: "",base: 0,size: 0})
     signal holesConfigrationFinished()
     function isInt(n){
         return Number(n) === n && n % 1 === 0 && Number(n) !== 0
