@@ -347,8 +347,8 @@ Item {
         visible: false
         onClicked: {
             ////
-            Ut1.deallocate("rest1")
-            Ut1.deallocate("p1")
+//            Ut1.deallocate("rest1")
+//            Ut1.deallocate("p1")
             ////
             for(var i = 0 ; i < holesNum; i++)
             {
