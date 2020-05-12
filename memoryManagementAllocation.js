@@ -15,7 +15,7 @@ struct = {
     state: "new",
     algorithmType: "firstfit",
     base:-1,
-    size:16
+    size:9
 };
 listOfSegments.push(struct);
 
@@ -26,7 +26,7 @@ struct = {
     state: "new",
     algorithmType: "firstfit",
     base:-1,
-    size:30
+    size:16
 };
 listOfSegments.push(struct);
 
@@ -37,7 +37,7 @@ struct = {
     state: "new",
     algorithmType: "firstfit",
     base:-1,
-    size:9
+    size:20
 };
 listOfSegments.push(struct);
 
@@ -48,7 +48,7 @@ struct = {
     state: "new",
     algorithmType: "firstfit",
     base:70,
-    size:10
+    size:30
 };
 listOfSegments.push(struct);
 
@@ -182,13 +182,20 @@ function allocateProcess(listOfSegments)
          console.log("Before --> ID: "+memList[it].id+"        "+"size: "+memList[it].size);
     }
 
-    if(listOfSegments[0].algorithmType==="f_fit")
+    if(listOfSegments[0].algorithmType==="firstfit")
     {
        firstFitAlgorithm(listOfSegments);
+        arrangeLists () ;
     }
     else
     {
        bestFitAlgorithm(listOfSegments);
+       arrangeLists ();
+        var i=0 ;
+        for(i=0 ; i<listOfHoles.length ; i++)
+        {
+             console.log("list of Holes --> ID: "+listOfHoles[i].id+"        "+"size: "+listOfHoles[i].size);
+        }
     }
 
     var itr=0 ;
@@ -211,7 +218,7 @@ function checkValidity()
     {
         //Error Signal will be emitted
     }
-    if(listOfSegments[0].algorithmType==="f_fit")
+    if(listOfSegments[0].algorithmType==="firstfit")
     {
        isValid = checkFirstFit(listOfSegments);
     }
@@ -235,6 +242,7 @@ function checkValidity()
 
 function checkFirstFit(listOfSegments)
 {
+    let tempHoleList = JSON.parse(JSON.stringify(listOfHoles));
     var segItr=0 , holeItr=0;
 
     while(segItr<listOfSegments.length)
@@ -247,13 +255,8 @@ function checkFirstFit(listOfSegments)
         }
         if(listOfSegments[segItr].size <= tempHoleList[holeItr].size)
         {
-            console.log("hole_it: "+ holeItr+"     "+ "segment_it: "+ segItr);
-            console.log("size before " + tempHoleList[holeItr].size) ;
-
             //updates hole list by allocating segment size into The Hole
             tempHoleList[holeItr].size -= listOfSegments[segItr].size;
-
-            console.log("size after " + tempHoleList[holeItr].size) ;
             segItr++;
             holeItr=0;
         }
@@ -334,21 +337,10 @@ function bestFitAlgorithm(listOfSegments)
         }
         if(listOfSegments[segItr].size <= listOfHoles[holeItr].size)
         {
-
-            // updates hole list by allocating segment size into The Hole
-
-            listOfHoles[holeItr].size -= listOfSegments[segItr].size;
-            console.log(listOfHoles[holeItr].id + " Hole size after 1st decrementation " + listOfHoles[holeItr].size);
             // Make Allocation in Memory List by sending
             // SegmentStruct to be updated
             // ID of The Hole to be Replaced by The segment
             updateMemoryList(listOfSegments[segItr],listOfHoles[holeItr].id);
-
-            // Remove Hole from ListOfHoles if its size = zero
-            if(listOfHoles[holeItr].size===0)
-            {
-                listOfHoles.splice(holeItr,1);
-            }
 
             segItr++;
             holeItr=0;
@@ -365,6 +357,33 @@ function bestFitAlgorithm(listOfSegments)
 
 function firstFitAlgorithm(listOfSegments)
 {
+    var segItr=0 , holeItr=0;
+
+    while(segItr<listOfSegments.length)
+    {
+
+        if(holeItr>=listOfHoles.length)
+        {
+            // Error is Happened
+            // should be allocated in pending list
+            return 0;
+        }
+        if(listOfSegments[segItr].size <= listOfHoles[holeItr].size)
+        {
+            // Make Allocation in Memory List by sending
+            // SegmentStruct to be updated
+            // ID of The Hole to be Replaced by The segment
+            updateMemoryList(listOfSegments[segItr],listOfHoles[holeItr].id);
+
+            segItr++;
+            holeItr=0;
+        }
+        else
+        {
+            // increment holeItr
+            holeItr++ ;
+        }
+    }
 
 
 }
@@ -382,7 +401,7 @@ function updateMemoryList(segmentStruct,HoleID)
             //Updating The Hole with New size
             //console.log(memList[it].id +" Hole size after 2nd decrementation " + memList[it].size );
 
-            //memList[it].size = Math.abs(memList[it].size- segmentStruct.size) ;
+            memList[it].size = Math.abs(memList[it].size- segmentStruct.size) ;
 
             // Replace The Hole By segmentStruct incase that Hole size is equal to zero
 
@@ -394,9 +413,7 @@ function updateMemoryList(segmentStruct,HoleID)
 
             if(memList[it].size === 0)
             {
-                console.log("Test1 --> ID: "+memList[it].id + memList[it].segmentName +"        "+"size: "+memList[it].size);
                 memList.splice(it,1,segmentStruct);
-                console.log("Test2 --> ID: "+memList[it].id+ memList[it].segmentName +"        "+"size: "+memList[it].size);
                 break ;
             }
 
@@ -410,4 +427,18 @@ function updateMemoryList(segmentStruct,HoleID)
 
 
 
+function arrangeLists ()
+{
+    listOfHoles.splice(0,listOfHoles.length);
+    listOfSegments.splice(0,listOfSegments.length);
 
+    var itr=0 ;
+    while(itr<memList.length)
+    {
+        if(memList[itr].Type === "hole")
+        {
+            listOfHoles.push(memList[itr]);
+        }
+        itr++ ;
+    }
+}
