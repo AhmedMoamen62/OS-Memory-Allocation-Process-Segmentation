@@ -14,7 +14,7 @@ struct = {
     segmentName: "seg1",
     state: "new",
     algorithmType: "firstfit",
-    base:30,
+    base:-1,
     size:16
 };
 listOfSegments.push(struct);
@@ -25,7 +25,7 @@ struct = {
     segmentName: "seg2",
     state: "new",
     algorithmType: "firstfit",
-    base:40,
+    base:-1,
     size:30
 };
 listOfSegments.push(struct);
@@ -36,7 +36,7 @@ struct = {
     segmentName: "seg3",
     state: "new",
     algorithmType: "firstfit",
-    base:70,
+    base:-1,
     size:9
 };
 listOfSegments.push(struct);
@@ -317,6 +317,7 @@ function bestFitAlgorithm(listOfSegments)
 {
     var segItr=0 , holeItr=0;
 
+
     // Sorting holes based on size
     listOfHoles.sort(function(a,b){
         return a.size - b.size;
@@ -335,8 +336,9 @@ function bestFitAlgorithm(listOfSegments)
         {
 
             // updates hole list by allocating segment size into The Hole
-            listOfHoles[holeItr].size -= listOfSegments[segItr].size;
 
+            listOfHoles[holeItr].size -= listOfSegments[segItr].size;
+            console.log(listOfHoles[holeItr].id + " Hole size after 1st decrementation " + listOfHoles[holeItr].size);
             // Make Allocation in Memory List by sending
             // SegmentStruct to be updated
             // ID of The Hole to be Replaced by The segment
@@ -374,20 +376,15 @@ function updateMemoryList(segmentStruct,HoleID)
     var newHoleSize=0;
     while(it< memList.length)
     {
-        if(memList[it].id===HoleID)
+        if(memList[it].id === HoleID)
         {
 
             //Updating The Hole with New size
-            memList[it].size = Math.abs(memList[it].size- segmentStruct.size) ;
+            //console.log(memList[it].id +" Hole size after 2nd decrementation " + memList[it].size );
+
+            //memList[it].size = Math.abs(memList[it].size- segmentStruct.size) ;
 
             // Replace The Hole By segmentStruct incase that Hole size is equal to zero
-            if(memList[it].size === 0)
-            {
-                console.log("Test1 --> ID: "+memList[it].id + memList[it].segmentName +"        "+"size: "+memList[it].size);
-                memList.splice(it,1,segmentStruct);
-                 console.log("Test2 --> ID: "+memList[it].id+ memList[it].segmentName +"        "+"size: "+memList[it].size);
-                break ;
-            }
 
             // update Segment base address
             segmentStruct.base = memList[it].base ;
@@ -395,7 +392,13 @@ function updateMemoryList(segmentStruct,HoleID)
             // update Hole base address
             memList[it].base += segmentStruct.size ;
 
-
+            if(memList[it].size === 0)
+            {
+                console.log("Test1 --> ID: "+memList[it].id + memList[it].segmentName +"        "+"size: "+memList[it].size);
+                memList.splice(it,1,segmentStruct);
+                console.log("Test2 --> ID: "+memList[it].id+ memList[it].segmentName +"        "+"size: "+memList[it].size);
+                break ;
+            }
 
             // Replacing The Hole By segmentStruct
             memList.splice(it,0,segmentStruct);
