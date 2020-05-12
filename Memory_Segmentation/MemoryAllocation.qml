@@ -37,17 +37,30 @@ Item {
                 Rectangle{
                     id: memoryRect
                     width: 90
-                    color: "orange"
+                    color: {
+                        if(memory.memList[index].id.substr(0,4) === "Hole")
+                        {
+                            return "light blue"
+                        }
+                        else if(memory.memList[index].id.substr(0,4) === "Rest")
+                        {
+                            return "red"
+                        }
+                        else
+                        {
+                            return "orange"
+                        }
+                    }
                     border.color: "dark red"
-                    radius: 10
+                    radius: 4
                     function setWidth()
                     {
                         height = (memory.memList[index].size/memSize)*memory.height*0.6
                     }
                     function setTexts()
                     {
-                        textIdLable.text = memory.memList[index].id
-                        textAddressStart.text = memory.memList[index].base
+                        textIdLable.text = memory.memList[index].id.substr(0,1) === "P" ? memory.memList[index].id + " , " + memory.memList[index].segmentName : memory.memList[index].id
+                        textAddressStart.text = index == memory.memList.length - 1 ? memSize : memory.memList[index+1].base
                     }
                     Connections {
                         target: memoryRepeater
@@ -79,7 +92,7 @@ Item {
                     }
                     Text {
                         id: zeros
-                        text: "0"
+                        text: memory.memList[index].base
                         color: "orange"
                         font.pixelSize: 16
                         visible: index == 0 ? true : false
@@ -92,7 +105,7 @@ Item {
                     Text {
                         id: textIdLable
                         color: "black"
-                        font.pixelSize: 18
+                        font.pixelSize: 16
                         font.bold: true
                         anchors.centerIn: parent
                     }

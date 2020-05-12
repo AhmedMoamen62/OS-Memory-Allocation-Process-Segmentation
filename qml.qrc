@@ -7,7 +7,6 @@
         <file>CustomizingComboBox.qml</file>
         <file>CustomizingButton.qml</file>
         <file>HolesConfigration.qml</file>
-        <file>deallocation.js</file>
         <file>memoryManagementAllocation.js</file>
     </qresource>
 </RCC>

@@ -17,10 +17,10 @@ Item {
     property var memorySegments: []
     property ListModel processSegmentsData: ListModel {
     }
-    property var segments: ({Type: "",id: "",segmentName: "",state: "",algorithmType: "",base: 0,size: 0})
     signal generateProcessConfigration()
     signal allocateProcess()
     signal deallocateProcess()
+    signal callAllocation(string process)
     signal callDeallocation(string process)
     onAllocateProcess: {
         processSegmentsData.get(currentprocess.currentIndex).State = "Allocated"
@@ -170,7 +170,7 @@ Item {
         }
         processNum++
         processNameNum++
-        fitting = firstfit.checked ? "First Fit" : "Best Fit"
+        fitting = firstfit.checked ? "firstfit" : "bestfit"
         processlist.append({"name":"P"+processNameNum})
         processSegmentsData.append({"Process":[],"Fitting":fitting,"State": "None"})
         for(var i = 0 ; i < segmentNum ; i++)
@@ -431,6 +431,7 @@ Item {
             onClicked: {
                 if(segmentnum.currentIndex != -1 && currentprocess.currentIndex != - 1 && isInt(Number(segmentbase.text)) && isInt(Number(segmentsize.text)))
                 {
+                    var segments = {Type: "",id: "",segmentName: "",state: "",algorithmType: "",base: 0,size: 0}
                     processselection.visible = false
                     segmentselection.visible = false
                     wrongsegbase.visible = false
@@ -492,7 +493,7 @@ Item {
                 if(checkSegmentsInitialization())
                 {
                     processFitting = processSegmentsData.get(currentprocess.currentIndex).Fitting
-                    allocateProcess()
+                    callAllocation(currentprocess.currentText)
                 }
                 else
                 {

@@ -1,5 +1,6 @@
 import QtQuick 2.12
 import QtQuick.Window 2.12
+import "memoryManagementAllocation.js" as Mma
 
 Window {
     id: window
@@ -13,22 +14,25 @@ Window {
     property alias memorySize: holesconfigration.memSize
     property alias processNumber: processconfigration.processNum
     property alias holesList: holesconfigration.listOfholes
+    property alias segmentsList: processconfigration.memorySegments
     property alias selectedProcess: processconfigration.currentProcess
     property alias memoryList: memory.memList
     property alias allocateFitting: processconfigration.processFitting
     signal processConfigration()
+    signal readPending()
+    onReadPending: {
+        //Mma.pendingList[0][0]
+    }
     onProcessConfigration: {
         holesconfigration.visible = false
         processconfigration.visible = true
         back_rec.visible = true
+        memoryList = Mma.initializeMemory(holesList)
         setMemory()
+        readPending()
     }
     function setMemory()
     {
-        memoryList = []
-        memoryList.push({id: "seg 1",size: 20,base: 20})
-        memoryList.push({id: "hole 1",size: 40,base: 60})
-        memoryList.push({id: "seg 2",size: 20,base: 80})
         memory.memSize = memorySize
         memory.drawMemory()
         memory.visible = true
@@ -44,9 +48,16 @@ Window {
         id: processconfigration
         visible: false
         anchors.fill: parent
+        onCallAllocation: {
+            memoryList = Mma.checkValidity(segmentsList)
+            allocateProcess()
+            setMemory()
+        }
         onCallDeallocation: {
-            //deallocatefromJS(process)
+            memoryList = Mma.deallocate(process)
             deallocateProcess()
+            setMemory()
+            readPending()
         }
     }
     MemoryAllocation {

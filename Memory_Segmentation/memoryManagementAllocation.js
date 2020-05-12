@@ -4,109 +4,110 @@ var memorySize = 100
 let listOfSegments= [];
 let tempHoleList = [] ;
 var pendingList = [] ;
-/******************************************************************/
 
+
+/******************************************************************/
 
 /************************************************************************************/
 
-struct = {
-    Type : "segment",
-    id: "p1",
-    segmentName: "seg1",
-    state: "new",
-    algorithmType: "bestfit",
-    base:-1,
-    size:2
-};
-listOfSegments.push(struct);
+//struct = {
+//    Type : "segment",
+//    id: "p1",
+//    segmentName: "seg1",
+//    state: "new",
+//    algorithmType: "bestfit",
+//    base:-1,
+//    size:2
+//};
+//listOfSegments.push(struct);
 
-struct = {
-    Type : "segment",
-    id: "p1",
-    segmentName: "seg2",
-    state: "new",
-    algorithmType: "bestfit",
-    base:-1,
-    size:16
-};
-listOfSegments.push(struct);
+//struct = {
+//    Type : "segment",
+//    id: "p1",
+//    segmentName: "seg2",
+//    state: "new",
+//    algorithmType: "bestfit",
+//    base:-1,
+//    size:16
+//};
+//listOfSegments.push(struct);
 
-struct = {
-    Type : "segment",
-    id: "p1",
-    segmentName: "seg3",
-    state: "new",
-    algorithmType: "bestfit",
-    base:-1,
-    size:20
-};
-listOfSegments.push(struct);
+//struct = {
+//    Type : "segment",
+//    id: "p1",
+//    segmentName: "seg3",
+//    state: "new",
+//    algorithmType: "bestfit",
+//    base:-1,
+//    size:20
+//};
+//listOfSegments.push(struct);
 
-struct = {
-    Type : "segment",
-    id: "p1",
-    segmentName: "seg4",
-    state: "new",
-    algorithmType: "bestfit",
-    base:70,
-    size:45
-};
-listOfSegments.push(struct);
-
-
-/********************************************/
+//struct = {
+//    Type : "segment",
+//    id: "p1",
+//    segmentName: "seg4",
+//    state: "new",
+//    algorithmType: "bestfit",
+//    base:70,
+//    size:45
+//};
+//listOfSegments.push(struct);
 
 
-var struct = {
-    Type : "hole", // hole,restricted,segment
-    id : "hole1", //hole+i,rest+i,p+i
-    segmentName : "", //any valid name
-    state: "", //new, pending
-    algorithmType: "",//firstfit,bestfit
-    base:10,//int
-    size:18//int
-};
+///********************************************/
 
-listOfHoles.push(struct);
-tempHoleList.push(struct);
 
-struct = {
-    Type : "hole",
-    id: "hole2",
-    segmentName: "",
-    state: "",
-    algorithmType: "",
-    base:30,
-    size:9
-};
+//var struct = {
+//    Type : "hole", // hole,restricted,segment
+//    id : "hole1", //hole+i,rest+i,p+i
+//    segmentName : "", //any valid name
+//    state: "", //new, pending
+//    algorithmType: "",//firstfit,bestfit
+//    base:10,//int
+//    size:18//int
+//};
 
-listOfHoles.push(struct);
-tempHoleList.push(struct);
+//listOfHoles.push(struct);
+//tempHoleList.push(struct);
 
-struct = {
-    Type : "hole",
-    id: "hole3",
-    segmentName: "",
-    state: "",
-    algorithmType: "",
-    base:50,
-    size:30
-};
+//struct = {
+//    Type : "hole",
+//    id: "hole2",
+//    segmentName: "",
+//    state: "",
+//    algorithmType: "",
+//    base:30,
+//    size:9
+//};
 
-listOfHoles.push(struct);
-tempHoleList.push(struct);
+//listOfHoles.push(struct);
+//tempHoleList.push(struct);
 
-var struct = {
-    Type : "hole", // hole,restricted,segment
-    id : "hole4", //hole+i,rest+i,p+i
-    segmentName : "", //any valid name
-    state: "", //new, pending
-    algorithmType: "",//firstfit,bestfit
-    base:80,//int
-    size:20//int
-};
+//struct = {
+//    Type : "hole",
+//    id: "hole3",
+//    segmentName: "",
+//    state: "",
+//    algorithmType: "",
+//    base:50,
+//    size:30
+//};
 
-listOfHoles.push(struct);
+//listOfHoles.push(struct);
+//tempHoleList.push(struct);
+
+//var struct = {
+//    Type : "hole", // hole,restricted,segment
+//    id : "hole4", //hole+i,rest+i,p+i
+//    segmentName : "", //any valid name
+//    state: "", //new, pending
+//    algorithmType: "",//firstfit,bestfit
+//    base:80,//int
+//    size:20//int
+//};
+
+//listOfHoles.push(struct);
 
 
 //tempHoleList.push(struct);
@@ -116,8 +117,9 @@ listOfHoles.push(struct);
 */
 
 /**************************** initializeMemory Function ******************************/
-function initializeMemory()
+function initializeMemory(listOfHoles_temp)
 {
+    listOfHoles = listOfHoles_temp
     mergeListOfHoles ();
     var currentMemoryLocation=0,holeCounter=0,restCounter=1;
 
@@ -135,7 +137,7 @@ function initializeMemory()
         {
             var TempRestrictedArea={
                 Type : "restricted" ,
-                id: "rest" + String(restCounter),
+                id: "Rest " + String(restCounter),
                 segmentName: "",
                 state: "",
                 algorithmType: "",
@@ -158,7 +160,7 @@ function initializeMemory()
     if(currentMemoryLocation < memorySize){
         TempRestrictedArea={
             Type : "restricted" ,
-            id: "rest" + String(restCounter),
+            id: "Rest " + String(restCounter),
             processName: "",
             state: "",
             algorithmType: "",
@@ -174,6 +176,7 @@ function initializeMemory()
            console.log(memList[it].id + "  " + memList[it].base+ "   " + memList[it].size);
         it++;
     }
+    return memList
 }
 
 /**************************** allocateProcess Function ******************************/
@@ -211,8 +214,9 @@ function allocateProcess(listOfSegments)
 }
 
 /**************************** checkValidity Function ******************************/
-function checkValidity()
+function checkValidity(listOfSegments_temp)
 {
+    listOfSegments = listOfSegments_temp
     var sizeOfTotalHoles = getListSize(listOfHoles);
     var sizeOfTotalSegments = getListSize(listOfSegments);
     var isValid ;
@@ -239,6 +243,7 @@ function checkValidity()
                 pendingList[pendingList.length-1][i].state="pending";
                 console.log("After --> ID: "+pendingList[0][i].id+pendingList[0][i].segmentName + "        "+"size: "+pendingList[0][i].size+ "        "+"state: "+pendingList[0][i].state);
             }
+
         }
     }
     else
@@ -291,7 +296,7 @@ function checkValidity()
         }
 
     }
-
+    return memList
 }
 
 /**************************** checkFirstFit Function ******************************/
@@ -452,6 +457,8 @@ function firstFitAlgorithm(listOfSegments)
 /**************************** updateMemoryList Function ******************************/
 function updateMemoryList(segmentStruct,HoleID)
 {
+    // Sorting holes based on base address
+    listOfHoles.sort(function(a,b){return a.base - b.base;});
     var tempStruct ;
     var it=0 ;
     var newHoleSize=0;
@@ -484,6 +491,10 @@ function updateMemoryList(segmentStruct,HoleID)
             break ;
         }
         it++;
+    }
+    for(var i = 0; i < listOfHoles.length ; i++)
+    {
+        console.log(listOfHoles[i].id,listOfHoles[i].base)
     }
 }
 
@@ -533,9 +544,10 @@ function deallocate(name) {
         let tempList = JSON.parse(JSON.stringify(pendingList[0]));
 
         listOfSegments=tempList;
-        checkValidity()
+        checkValidity(listOfSegments)
     }
     print()
+    return memList
 };
 
 function merge()
@@ -555,9 +567,9 @@ function merge()
     //this function's role is to correct id-s after deallocation)
     for(  i = 0 ; i <  memList.length; i++){
         if(memList[i].Type==="hole" ){
-            memList[i].id = "hole".concat((numHole++).toString())}
+            memList[i].id = "Hole ".concat((numHole++).toString())}
         if(memList[i].Type==="restricted" ){
-            memList[i].id = "rest".concat((numRest++).toString())}
+            memList[i].id = "Rest ".concat((numRest++).toString())}
     }
 
 }
@@ -586,6 +598,6 @@ function mergeListOfHoles ()
     for(var  i = 0 ; i <  listOfHoles.length; i++)
     {
         if(listOfHoles[i].Type==="hole" ){
-            listOfHoles[i].id = "hole".concat((numHole++).toString())}
+            listOfHoles[i].id = "Hole ".concat((numHole++).toString())}
     }
 }

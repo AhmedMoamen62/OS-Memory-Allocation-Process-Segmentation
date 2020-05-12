@@ -10,7 +10,6 @@ Item {
     property int memSize: 0
     property int holesNum: 0
     property var listOfholes : []
-    property var holes: ({Type: "",id: "",segmentName: "",state: "new",algorithmType: "",base: 0,size: 0})
     signal holesConfigrationFinished()
     function isInt(n){
         return Number(n) === n && n % 1 === 0 && Number(n) !== 0
@@ -184,14 +183,15 @@ Item {
             onClicked: {
                 if(holenumbers.currentIndex != -1 && isInt(Number(holebase.text)) && isInt(Number(holesize.text)))
                 {
+                    var holes = {Type: "",id: "",segmentName: "",state: "new",algorithmType: "",base: 0,size: 0}
                     holeselection.visible = false
                     wrongholebase.visible = false
                     wrongholesize.visible = false
-                    holes.Type = "HOLE"
+                    holes.Type = "hole"
                     holes.id = holenumbers.currentText
                     holes.base = Number(holebase.text)
                     holes.size = Number(holesize.text)
-                    listOfholes[holenumbers.currentIndex] = holes
+                    listOfholes.push(holes)
                     holesdata.set(holenumbers.currentIndex,{"HolesName":holenumbers.currentText,
                                         "base":holes.base,
                                         "size":holes.size,

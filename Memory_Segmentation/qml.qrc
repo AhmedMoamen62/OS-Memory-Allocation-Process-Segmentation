@@ -10,6 +10,7 @@
         <file>deallocation.js</file>
         <file>ProcessConfigration.qml</file>
         <file>MemoryAllocation.qml</file>
+        <file>memoryManagementAllocation.js</file>
     </qresource>
     <qresource prefix="/images">
         <file>icons/process_manager.png</file>

@@ -3,7 +3,7 @@ import QtQuick.Layouts 1.3
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Dialogs 1.3
-import "deallocation.js" as Ut1
+import "memoryManagementAllocation.js" as Mma
 
 
 Item {
@@ -76,6 +76,8 @@ Item {
             Layout.column: 0
             Layout.row: 2
             onClicked: {
+                Mma.initializeMemory();
+                Mma.checkValidity();
                 if(isInt(Number(memorysize.text)))
                 {
                     wrongmemsize.visible = false
@@ -344,8 +346,9 @@ Item {
         visible: false
         onClicked: {
             ////
-            Ut1.deallocate("rest1")
-            Ut1.deallocate("p1")
+            Mma.deallocate("rest3")
+//            Ut1.deallocate("rest1")
+//            Ut1.deallocate("p1")
             ////
             for(var i = 0 ; i < holesNum; i++)
             {
