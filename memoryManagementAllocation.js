@@ -1,8 +1,9 @@
-var memList = [];
+﻿var memList = [];
 let listOfHoles = [];
 var memorySize = 100
-var listOfSegments= [];
+let listOfSegments= [];
 let tempHoleList = [] ;
+var pendingList = [] ;
 /******************************************************************/
 
 
@@ -15,7 +16,7 @@ struct = {
     state: "new",
     algorithmType: "firstfit",
     base:-1,
-    size:9
+    size:50
 };
 listOfSegments.push(struct);
 
@@ -217,25 +218,72 @@ function checkValidity()
     if(sizeOfTotalSegments > sizeOfTotalHoles)
     {
         //Error Signal will be emitted
-    }
-    if(listOfSegments[0].algorithmType==="firstfit")
-    {
-       isValid = checkFirstFit(listOfSegments);
-    }
-    else
-    {
-        isValid = checkBestFit(listOfSegments);
-    }
-    console.log("isValid Vlaue: "+isValid);
+        if(listOfSegments[0].state !=="pending")
+        {
+            // allocating segments at Pending List
+            let tempList = JSON.parse(JSON.stringify(listOfSegments));
 
-    if(isValid===1)
-    {
-        // Make Allocation
-        allocateProcess(listOfSegments);
+            pendingList.push(tempList);
+
+            listOfSegments.splice(0,listOfSegments.length);
+
+            console.log ("temp list length: "+tempList.length);
+
+            var i=0 ;
+            for(i=0 ; i<pendingList[0].length ; i++)
+            {
+                pendingList[pendingList.length-1][i].state="pending";
+                console.log("After --> ID: "+pendingList[0][i].id+pendingList[0][i].segmentName + "        "+"size: "+pendingList[0][i].size+ "        "+"state: "+pendingList[0][i].state);
+            }
+        }
     }
     else
     {
-        // emit error Signal
+        if(listOfSegments[0].algorithmType==="firstfit")
+        {
+           isValid = checkFirstFit(listOfSegments);
+        }
+        else
+        {
+            isValid = checkBestFit(listOfSegments);
+        }
+        console.log("isValid Vlaue: "+isValid);
+
+        if(isValid===1)
+        {
+            // if the Process came from pendingList then pop it
+            if(listOfSegments[0].state==="pending")
+            {
+                pendingList.splice(0,1);
+            }
+
+            // Make Allocation
+            allocateProcess(listOfSegments);
+
+        }
+        else
+        {
+            if(listOfSegments[0].state !=="pending")
+            {
+                // allocating segments at Pending List
+                let tempList = JSON.parse(JSON.stringify(listOfSegments));
+
+                pendingList.push(tempList);
+
+                listOfSegments.splice(0,listOfSegments.length);
+
+                console.log ("temp list length: "+tempList.length);
+
+                var itr=0 ;
+                for(itr=0 ; itr<pendingList[0].length ; itr++)
+                {
+                    pendingList[pendingList.length-1][itr].state="pending";
+                    //console.log("After --> ID: "+pendingList[0][itr].id+pendingList[0][itr].segmentName + "        "+"size: "+pendingList[0][itr].size+ "        "+"state: "+pendingList[0][itr].state);
+                }
+            }
+
+        }
+
     }
 
 }
@@ -442,3 +490,5 @@ function arrangeLists ()
         itr++ ;
     }
 }
+
+
