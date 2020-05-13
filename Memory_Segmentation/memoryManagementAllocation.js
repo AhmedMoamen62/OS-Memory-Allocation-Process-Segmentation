@@ -457,8 +457,11 @@ function firstFitAlgorithm(listOfSegments)
 /**************************** updateMemoryList Function ******************************/
 function updateMemoryList(segmentStruct,HoleID)
 {
-    // Sorting holes based on base address
-    listOfHoles.sort(function(a,b){return a.base - b.base;});
+    if(segmentStruct.algorithmType==="firstfit")
+    {
+        // Sorting holes based on base address
+        listOfHoles.sort(function(a,b){return a.base - b.base;});
+    }
     var tempStruct ;
     var it=0 ;
     var newHoleSize=0;
