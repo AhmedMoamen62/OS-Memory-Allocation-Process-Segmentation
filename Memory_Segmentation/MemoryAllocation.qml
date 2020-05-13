@@ -12,7 +12,7 @@ Item {
     }
     ScrollView {
         id: chartscroll
-        width: 150
+        width: 200
         height: parent.height*0.5
         anchors.top: parent.top
         anchors.right: parent.right
@@ -36,11 +36,11 @@ Item {
                 }
                 Rectangle{
                     id: memoryRect
-                    width: 90
+                    width: 150
                     color: {
                         if(memory.memList[index].id.substr(0,4) === "Hole")
                         {
-                            return "light blue"
+                            return "blue"
                         }
                         else if(memory.memList[index].id.substr(0,4) === "Rest")
                         {
@@ -51,15 +51,15 @@ Item {
                             return "orange"
                         }
                     }
-                    border.color: "dark red"
-                    radius: 4
+                    border.color: "grey"
+                    radius: 3
                     function setWidth()
                     {
-                        height = (memory.memList[index].size/memSize)*memory.height*0.6
+                        height = (memory.memList[index].size/memSize)*memory.height*0.75
                     }
                     function setTexts()
                     {
-                        textIdLable.text = memory.memList[index].id.substr(0,1) === "P" ? memory.memList[index].id + " , " + memory.memList[index].segmentName : memory.memList[index].id
+                        textIdLable.text = memory.memList[index].Type === "segment" ? memory.memList[index].id + " , " + memory.memList[index].segmentName : memory.memList[index].id
                         textAddressStart.text = index == memory.memList.length - 1 ? memSize : memory.memList[index+1].base
                     }
                     Connections {

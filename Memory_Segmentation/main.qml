@@ -9,7 +9,7 @@ Window {
     height: 480
     color: "black"
     minimumHeight: 600
-    minimumWidth: 800
+    minimumWidth: 1000
     title: qsTr("Memory Segmentation")
     property alias memorySize: holesconfigration.memSize
     property alias processNumber: processconfigration.processNum
@@ -21,7 +21,7 @@ Window {
     signal processConfigration()
     signal readPending()
     onReadPending: {
-        //Mma.pendingList[0][0]
+        //Mma.pendingList[0][0].id
     }
     onProcessConfigration: {
         holesconfigration.visible = false
@@ -36,6 +36,19 @@ Window {
         memory.memSize = memorySize
         memory.drawMemory()
         memory.visible = true
+    }
+    function setProcessesBase()
+    {
+        for(var i = 0 ; i < memoryList.length ; i++)
+        {
+            for(var j = 0 ; j < processconfigration.processSegmentsData.count ; j++)
+            {
+                if(processconfigration.processSegmentsData.get(j).Name === memoryList[i].id)
+                {
+
+                }
+            }
+        }
     }
     HolesConfigration {
         id: holesconfigration

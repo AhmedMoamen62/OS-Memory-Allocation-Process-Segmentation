@@ -68,26 +68,28 @@ Item {
     }
     function showEditProcess()
     {
-        editprocess.visible = true
         deleteprocess.visible = true
+        editprocess.visible = true
         submitsegment.visible = false
         allocateprocess.visible = false
     }
     function hideEditProcess()
     {
-        editprocess.visible = false
         deleteprocess.visible = false
+        editprocess.visible = false
         submitsegment.visible = true
         allocateprocess.visible = true
     }
     function showState()
     {
         initialcolumn.visible = false
+        basecolumn.visible = true
         statecolumn.visible = true
     }
     function hideState()
     {
         initialcolumn.visible = true
+        basecolumn.visible = false
         statecolumn.visible = false
     }
     function checkSegmentsInitialization()
@@ -172,17 +174,17 @@ Item {
         processNameNum++
         fitting = firstfit.checked ? "firstfit" : "bestfit"
         processlist.append({"name":"P"+processNameNum})
-        processSegmentsData.append({"Process":[],"Fitting":fitting,"State": "None"})
+        processSegmentsData.append({"Process":[],"Fitting":fitting,"State": "None","Name":"P"+processNameNum})
         for(var i = 0 ; i < segmentNum ; i++)
         {
             segmentsname.append({"name":"Seg "+(i+1)})
             segmentsDataList.SegmentName = segmentdata.get(i).SegmentName
-            segmentsDataList.base = segmentdata.get(i).base
+            segmentsDataList.base = 0//segmentdata.get(i).base
             segmentsDataList.size = segmentdata.get(i).size
             segmentsDataList.Initial = segmentdata.get(i).Initial
             segmentsDataList.state = segmentdata.get(i).state
             processSegmentsData.get(processNum - 1).Process.append({"Segment":{"SegmentName":segmentsDataList.SegmentName,
-                                                                               "base":segmentsDataList.base,
+                                                                               "base":0,
                                                                                "size":segmentsDataList.size,
                                                                                "Initial":segmentsDataList.Initial,
                                                                                "state":segmentsDataList.state}})
@@ -287,7 +289,7 @@ Item {
     GridLayout {
         id: segmentsconfigration
         columns: 3
-        rows: 7
+        rows: 6
         columnSpacing: 5
         rowSpacing: 10
         anchors.top: basicsconfigration.bottom
@@ -326,18 +328,10 @@ Item {
             color: "orange"
         }
         Text {
-            text: "Segment Base:"
-            font.bold: true
-            font.family: "Comic Sans MS"
-            Layout.row: 3
-            Layout.column: 0
-            color: "orange"
-        }
-        Text {
             text: "Segment Size:"
             font.bold: true
             font.family: "Comic Sans MS"
-            Layout.row: 4
+            Layout.row: 3
             Layout.column: 0
             color: "orange"
         }
@@ -360,19 +354,10 @@ Item {
             visible: false
         }
         Text {
-            id: wrongsegbase
-            text: "Please enter a +ve int seg. base"
-            font.family: "Comic Sans MS"
-            Layout.row: 3
-            Layout.column: 2
-            color: "orange"
-            visible: false
-        }
-        Text {
             id: wrongsegsize
             text: "Please enter a +ve int seg. size"
             font.family: "Comic Sans MS"
-            Layout.row: 4
+            Layout.row: 3
             Layout.column: 2
             color: "orange"
             visible: false
@@ -412,67 +397,51 @@ Item {
             Layout.row: 2
         }
         CustomizingTextField {
-            id: segmentbase
-            placeholderText: "Enter Seg Base"
-            Layout.column: 1
-            Layout.row: 3
-        }
-        CustomizingTextField {
             id: segmentsize
             placeholderText: "Enter Seg Size"
             Layout.column: 1
-            Layout.row: 4
+            Layout.row: 3
         }
         CustomizingButton {
             id: submitsegment
             text: "Submit Segment"
             Layout.column: 0
-            Layout.row: 5
+            Layout.row: 4
             onClicked: {
-                if(segmentnum.currentIndex != -1 && currentprocess.currentIndex != - 1 && isInt(Number(segmentbase.text)) && isInt(Number(segmentsize.text)))
+                if(segmentnum.currentIndex != -1 && currentprocess.currentIndex != - 1 && isInt(Number(segmentsize.text)))
                 {
                     var segments = {Type: "",id: "",segmentName: "",state: "",algorithmType: "",base: 0,size: 0}
                     processselection.visible = false
                     segmentselection.visible = false
-                    wrongsegbase.visible = false
                     wrongsegsize.visible = false
-                    segments.Type = "PROCESS"
-                    segments.id = "P" + processNum
+                    segments.Type = "segment"
+                    segments.id = currentprocess.currentText
                     segments.segmentName = Number(segmentname.text) !== 0 ? segmentname.text : segmentsname.get(segmentnum.currentIndex).name
-                    segments.base = Number(segmentbase.text)
+                    segments.base = 0//Number(segmentbase.text)
                     segments.size = Number(segmentsize.text)
                     segments.algorithmType = fitting
                     segmentdata.set(segmentnum.currentIndex,{"SegmentName":segments.segmentName,
-                                        "base":segments.base,
+                                        "base":0,//segments.base,
                                         "size":segments.size,
                                         "Initial":"Initialized",
                                         "state":"None"})
                     processSegmentsData.get(currentprocess.currentIndex).Process.set(segmentnum.currentIndex,{"Segment":{"SegmentName":segments.segmentName,
-                                                                                       "base":segments.base,
+                                                                                       "base":0,//segments.base,
                                                                                        "size":segments.size,
                                                                                        "Initial":"Initialized",
                                                                                        "state":"None"}})
-                    memorySegments.push(segments)
+                    memorySegments[segmentnum.currentIndex] = segments
                 }
                 if(currentprocess.currentIndex == -1)
                 {
                     processselection.visible = true
                     segmentselection.visible = segmentnum.currentIndex == -1 ? true : false
-                    wrongsegbase.visible = !isInt(Number(segmentbase.text))
                     wrongsegsize.visible = !isInt(Number(segmentsize.text))
                 }
                 if(segmentnum.currentIndex == -1)
                 {
                     segmentselection.visible = true
                     processselection.visible = currentprocess.currentIndex == -1 ? true : false
-                    wrongsegbase.visible = !isInt(Number(segmentbase.text))
-                    wrongsegsize.visible = !isInt(Number(segmentsize.text))
-                }
-                if(!isInt(Number(segmentbase.text)))
-                {
-                    wrongsegbase.visible = true
-                    processselection.visible = currentprocess.currentIndex == -1 ? true : false
-                    segmentselection.visible = segmentnum.currentIndex == -1 ? true : false
                     wrongsegsize.visible = !isInt(Number(segmentsize.text))
                 }
                 if(!isInt(Number(segmentsize.text)))
@@ -480,7 +449,6 @@ Item {
                     wrongsegsize.visible = true
                     processselection.visible = currentprocess.currentIndex == -1 ? true : false
                     segmentselection.visible = segmentnum.currentIndex == -1 ? true : false
-                    wrongsegbase.visible = !isInt(Number(segmentbase.text))
                 }
             }
         }
@@ -488,7 +456,7 @@ Item {
             id: allocateprocess
             text: "Allocate Process"
             Layout.column: 1
-            Layout.row: 5
+            Layout.row: 4
             onClicked: {
                 if(checkSegmentsInitialization())
                 {
@@ -502,23 +470,23 @@ Item {
             }
         }
         CustomizingButton {
-            id: editprocess
-            text: "Edit"
-            Layout.column: 0
-            Layout.row: 6
-            visible: false
-            onClicked: {
-
-            }
-        }
-        CustomizingButton {
             id: deleteprocess
             text: "Deallcote"
-            Layout.column: 1
-            Layout.row: 6
+            Layout.column: 0
+            Layout.row: 5
             visible: false
             onClicked: {
                 callDeallocation(currentprocess.currentText)
+            }
+        }
+        CustomizingButton {
+            id: editprocess
+            text: "Edit"
+            Layout.column: 1
+            Layout.row: 5
+            visible: false
+            onClicked: {
+
             }
         }
     }
@@ -605,20 +573,22 @@ Item {
             role: "SegmentName"
             title: "Segments"
         }
-        TableViewColumn{
+        TableViewColumn {
+            id: basecolumn
             role: "base"
             title: "Base"
+            visible: false
         }
-        TableViewColumn{
+        TableViewColumn {
             role: "size"
             title: "Size"
         }
-        TableViewColumn{
+        TableViewColumn {
             id: initialcolumn
             role: "Initial"
             title: "Initialization"
         }
-        TableViewColumn{
+        TableViewColumn {
             id: statecolumn
             role: "state"
             title: "State"
