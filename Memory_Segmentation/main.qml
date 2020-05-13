@@ -52,6 +52,7 @@ Window {
             memoryList = Mma.checkValidity(segmentsList)
             allocateProcess()
             setMemory()
+            readPending()
         }
         onCallDeallocation: {
             memoryList = Mma.deallocate(process)
@@ -176,6 +177,7 @@ Window {
                     memory.visible = false
                     back_rec.visible = false
                     holesconfigration.visible = true
+                    holesconfigration.initializeDefaultConfigration()
                     processconfigration.generateProcessConfigration()
                 }
             }

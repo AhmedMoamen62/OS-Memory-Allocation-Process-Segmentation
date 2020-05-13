@@ -17,6 +17,18 @@ Item {
     ListModel {
         id: holeslist
     }
+    function initializeDefaultConfigration()
+    {
+        holeslist.clear()
+        holesdata.clear()
+        listOfholes = []
+        holesNum = 0
+        memSize = 0
+        basicsconfigration.visible = true
+        holesconfigration.visible = false
+        submitconfigrations.visible = false
+        holes_table.visible = false
+    }
     GridLayout {
         id: basicsconfigration
         columns: 3
@@ -191,7 +203,7 @@ Item {
                     holes.id = holenumbers.currentText
                     holes.base = Number(holebase.text)
                     holes.size = Number(holesize.text)
-                    listOfholes.push(holes)
+                    listOfholes[holenumbers.currentIndex] = holes
                     holesdata.set(holenumbers.currentIndex,{"HolesName":holenumbers.currentText,
                                         "base":holes.base,
                                         "size":holes.size,

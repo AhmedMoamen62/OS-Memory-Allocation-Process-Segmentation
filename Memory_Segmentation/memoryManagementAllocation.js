@@ -120,6 +120,7 @@ var pendingList = [] ;
 function initializeMemory(listOfHoles_temp)
 {
     listOfHoles = listOfHoles_temp
+    memList = []
     mergeListOfHoles ();
     var currentMemoryLocation=0,holeCounter=0,restCounter=1;
 
