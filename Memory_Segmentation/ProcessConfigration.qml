@@ -47,8 +47,16 @@ Item {
         {
             currentprocess.currentIndex = 0
             refreshTableSegments()
-            hideState()
-            hideEditProcess()
+            if(processSegmentsData.get(currentprocess.currentIndex).State === "None")
+            {
+                hideState()
+                hideEditProcess()
+            }
+            else
+            {
+                showState()
+                showEditProcess()
+            }
         }
         else
         {
@@ -190,7 +198,21 @@ Item {
                                                                                "state":segmentsDataList.state}})
         }
         currentprocess.currentIndex = processNum - 1
-        currentProcess = currentprocess.currentText
+        currentProcess = currentprocess.currentText        
+    }
+    function setSegmentsList()
+    {
+        for(var i = 0 ; i < processSegmentsData.get(currentprocess.currentIndex).Process.count ; i++)
+        {
+            var segments = {Type: "",id: "",segmentName: "",state: "",algorithmType: "",base: 0,size: 0}
+            segments.Type = "segment"
+            segments.id = processSegmentsData.get(currentprocess.currentIndex).Name
+            segments.segmentName = processSegmentsData.get(currentprocess.currentIndex).Process.get(i).Segment.SegmentName
+            segments.base = processSegmentsData.get(currentprocess.currentIndex).Process.get(i).Segment.base
+            segments.size = processSegmentsData.get(currentprocess.currentIndex).Process.get(i).Segment.size
+            segments.algorithmType = processSegmentsData.get(currentprocess.currentIndex).Fitting
+            memorySegments[i] = segments
+        }
     }
     ListModel {
         id: processlist
@@ -380,6 +402,7 @@ Item {
                     showState()
                 }
                 refreshTableSegments()
+                setSegmentsList()
                 currentProcess = currentText
             }
         }
@@ -419,7 +442,7 @@ Item {
                     segments.segmentName = Number(segmentname.text) !== 0 ? segmentname.text : segmentsname.get(segmentnum.currentIndex).name
                     segments.base = 0//Number(segmentbase.text)
                     segments.size = Number(segmentsize.text)
-                    segments.algorithmType = fitting
+                    segments.algorithmType = processSegmentsData.get(currentprocess.currentIndex).Fitting
                     segmentdata.set(segmentnum.currentIndex,{"SegmentName":segments.segmentName,
                                         "base":0,//segments.base,
                                         "size":segments.size,

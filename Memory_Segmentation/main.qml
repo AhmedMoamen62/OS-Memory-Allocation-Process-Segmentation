@@ -39,13 +39,29 @@ Window {
     }
     function setProcessesBase()
     {
-        for(var i = 0 ; i < memoryList.length ; i++)
+        // search for each allocated segment in memlist
+        for(var i = 0 ; i < memoryList.length ; i++) // i memlist
         {
-            for(var j = 0 ; j < processconfigration.processSegmentsData.count ; j++)
+            // search for each process to get segment base
+            for(var j = 0 ; j < processconfigration.processSegmentsData.count ; j++) // j process
             {
+                // check if memlist id is same with the process name
                 if(processconfigration.processSegmentsData.get(j).Name === memoryList[i].id)
                 {
-
+                    // search for each allocated segment in the process
+                    for(var h = 0 ; h < processconfigration.processSegmentsData.get(j).Process.count ; h++) // h segment
+                    {
+                        if(processconfigration.processSegmentsData.get(j).Process.get(h).Segment.SegmentName === memoryList[i].segmentName)
+                        {
+                            processconfigration.processSegmentsData.get(j).Process.set(h,{"Segment":{"SegmentName":processconfigration.processSegmentsData.get(j).Process.get(h).Segment.SegmentName,
+                                                                                                                         "base":memoryList[i].base,
+                                                                                                                         "size":processconfigration.processSegmentsData.get(j).Process.get(h).Segment.size,
+                                                                                                                         "Initial":processconfigration.processSegmentsData.get(j).Process.get(h).Segment.Initial,
+                                                                                                                         "state":processconfigration.processSegmentsData.get(j).Process.get(h).Segment.state}})
+                            break
+                        }
+                    }
+                    break
                 }
             }
         }
@@ -63,6 +79,7 @@ Window {
         anchors.fill: parent
         onCallAllocation: {
             memoryList = Mma.checkValidity(segmentsList)
+            setProcessesBase()
             allocateProcess()
             setMemory()
             readPending()
