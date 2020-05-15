@@ -6,6 +6,7 @@ Item {
     property int memSize: 0
     property var memList: []
     signal drawMemory()
+    signal deallocateSegment(string process)
     onDrawMemory: {
         memoryRepeater.model = memList
         memoryRepeater.setMemory()
@@ -69,27 +70,6 @@ Item {
                             memoryRect.setWidth()
                         }
                     }
-                    states: [
-                        State {
-                            name: "faded"
-                            PropertyChanges {
-                                target: memoryRect
-                                color: "gray"
-                            }
-                        },
-                        State {
-                            name: "original"
-                            PropertyChanges {
-                                target: memoryRect
-                                color: "orange"
-                            }
-                        }
-                    ]
-                    transitions: Transition {
-                        ColorAnimation {
-                            duration: 500
-                        }
-                    }
                     Text {
                         id: zeros
                         text: memory.memList[index].base
@@ -118,6 +98,34 @@ Item {
                         anchors.bottom: memoryRect.bottom
                         anchors.left: memoryRect.right
                         anchors.leftMargin: 3
+                    }
+                    MouseArea {
+                        id: deallocatemouse
+                        anchors.fill: parent
+                        acceptedButtons: Qt.LeftButton
+                        hoverEnabled: true
+                        onEntered: {
+                            if(memory.memList[index].Type !== "hole")
+                            {
+                                parent.color = "grey"
+                            }
+                        }
+                        onExited: {
+                            if(memory.memList[index].Type === "segment")
+                            {
+                                parent.color = "orange"
+                            }
+                            if(memory.memList[index].Type === "restricted")
+                            {
+                                parent.color = "red"
+                            }
+                        }
+                        onDoubleClicked: {
+                            if(memory.memList[index].Type !== "hole")
+                            {
+                                deallocateSegment(memory.memList[index].id)
+                            }
+                        }
                     }
                 }
             }

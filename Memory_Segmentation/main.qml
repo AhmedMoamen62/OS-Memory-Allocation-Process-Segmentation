@@ -64,19 +64,54 @@ Window {
     }
     function setProcessesState()
     {
-        // search for each allocated process in pendingList
-        for(var i = 0 ; i < Mma.pendingList.length ; i++) // i memlist
+        // search for all process states
+        for(var i = 0 ; i < processconfigration.processSegmentsData.count ; i++) // process list
         {
-            // check if memlist id is same with the process name
-            if(processconfigration.processSegmentsData.get(indexProcess).Name === Mma.pendingList[i][0].id)
+             var state = true
+             for(var j = 0 ; j < Mma.pendingList.length ; j++) // process pending list
+             {
+                  // check if pendingList id is same with the process name
+                 if(processconfigration.processSegmentsData.get(i).Name === Mma.pendingList[j][0].id)
+                 {
+                     processconfigration.processSegmentsData.get(i).State = "Pending"
+                     processconfigration.setSegmentsState("Pending",i)
+                     state = false
+                     break
+                 }
+             }
+             if(state)
+             {
+                 processconfigration.processSegmentsData.get(i).State = "Allocated"
+                 processconfigration.setSegmentsState("Allocated",i)
+             }
+        }
+    }
+//    function setProcessesState()
+//    {
+//        // search for each allocated process in pendingList
+//        for(var i = 0 ; i < Mma.pendingList.length ; i++) // i memlist
+//        {
+//            // check if memlist id is same with the process name
+//            if(processconfigration.processSegmentsData.get(indexProcess).Name === Mma.pendingList[i][0].id)
+//            {
+//                processconfigration.processSegmentsData.get(indexProcess).State = "Pending"
+//                processconfigration.setSegmentsState("Pending")
+//                return
+//            }
+//        }
+//        processconfigration.processSegmentsData.get(indexProcess).State = "Allocated"
+//        processconfigration.setSegmentsState("Allocated")
+//    }
+    function convertNameToIndex(name)
+    {
+        for(var i = 0 ; i < processconfigration.processSegmentsData.count ; i++)
+        {
+            if(processconfigration.processSegmentsData.get(i).Name === name)
             {
-                processconfigration.processSegmentsData.get(indexProcess).State = "Pending"
-                processconfigration.setSegmentsState("Pending")
-                return
+                return i
             }
         }
-        processconfigration.processSegmentsData.get(indexProcess).State = "Allocated"
-        processconfigration.setSegmentsState("Allocated")
+        return -1
     }
     HolesConfigration {
         id: holesconfigration
@@ -90,10 +125,6 @@ Window {
         visible: false
         anchors.fill: parent
         onCallAllocation: {
-            for(var i = 0 ; i < segmentsList.length ; i++)
-            {
-                console.log(segmentsList[i].segmentName)
-            }
             memoryList = Mma.checkValidity(segmentsList)
             setProcessesBase()
             setProcessesState()
@@ -102,15 +133,23 @@ Window {
         }
         onCallDeallocation: {
             memoryList = Mma.deallocate(process)
-            deallocateProcess()
+            setProcessesBase()
+            setProcessesState()
+            deallocateProcess(convertNameToIndex(process))
             setMemory()
-            readPending()
         }
     }
     MemoryAllocation {
         id: memory
         visible: false
         anchors.fill: parent
+        onDeallocateSegment: {
+            memoryList = Mma.deallocate(process)
+            setProcessesBase()
+            setProcessesState()
+            processconfigration.deallocateProcess(convertNameToIndex(process))
+            setMemory()
+        }
     }
     Rectangle{
         id: memorysize

@@ -20,7 +20,7 @@ Item {
     }
     signal generateProcessConfigration()
     signal allocateProcess()
-    signal deallocateProcess()
+    signal deallocateProcess(int index)
     signal callAllocation(string process)
     signal callDeallocation(string process)
     onAllocateProcess: {
@@ -29,7 +29,7 @@ Item {
         showEditProcess(processSegmentsData.get(currentprocess.currentIndex).State)
     }
     onDeallocateProcess: {
-        deallocateprocess()
+        deallocateprocess(index)
     }
     onGenerateProcessConfigration: {
         showDefaultConfigration()
@@ -37,39 +37,42 @@ Item {
     function isInt(n){
         return Number(n) === n && n % 1 === 0 && Number(n) !== 0;
     }
-    function deallocateprocess()
+    function deallocateprocess(index)
     {
-        processSegmentsData.remove(currentprocess.currentIndex)
-        processlist.remove(currentprocess.currentIndex)
-        processNum--
-        if(processNum > 0)
+        if(index !== -1)
         {
-            currentprocess.currentIndex = 0
-            refreshTableSegments()
-            if(processSegmentsData.get(currentprocess.currentIndex).State === "None")
+            processSegmentsData.remove(index)
+            processlist.remove(index)
+            processNum--
+            if(processNum > 0)
             {
-                hideState()
-                hideEditProcess()
+                currentprocess.currentIndex = 0
+                refreshTableSegments()
+                if(processSegmentsData.get(currentprocess.currentIndex).State === "None")
+                {
+                    hideState()
+                    hideEditProcess()
+                }
+                else
+                {
+                    showState(processSegmentsData.get(currentprocess.currentIndex).State)
+                    showEditProcess(processSegmentsData.get(currentprocess.currentIndex).State)
+                }
             }
             else
             {
-                showState(processSegmentsData.get(currentprocess.currentIndex).State)
-                showEditProcess(processSegmentsData.get(currentprocess.currentIndex).State)
+                showDefaultConfigration()
             }
         }
-        else
-        {
-            showDefaultConfigration()
-        }
     }
-    function setSegmentsState(state)
+    function setSegmentsState(state,index)
     {
-        for(var i = 0 ; i < processSegmentsData.get(currentprocess.currentIndex).Process.count ; i++)
+        for(var i = 0 ; i < processSegmentsData.get(index).Process.count ; i++)
         {
-            processSegmentsData.get(currentprocess.currentIndex).Process.set(i,{"Segment":{"SegmentName":processSegmentsData.get(currentprocess.currentIndex).Process.get(i).Segment.SegmentName,
-                                                                               "base":processSegmentsData.get(currentprocess.currentIndex).Process.get(i).Segment.base,
-                                                                               "size":processSegmentsData.get(currentprocess.currentIndex).Process.get(i).Segment.size,
-                                                                               "Initial":processSegmentsData.get(currentprocess.currentIndex).Process.get(i).Segment.Initial,
+            processSegmentsData.get(index).Process.set(i,{"Segment":{"SegmentName":processSegmentsData.get(index).Process.get(i).Segment.SegmentName,
+                                                                               "base":processSegmentsData.get(index).Process.get(i).Segment.base,
+                                                                               "size":processSegmentsData.get(index).Process.get(i).Segment.size,
+                                                                               "Initial":processSegmentsData.get(index).Process.get(i).Segment.Initial,
                                                                                "state":state}})
         }
     }
