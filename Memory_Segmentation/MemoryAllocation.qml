@@ -12,12 +12,12 @@ Item {
     }
     ScrollView {
         id: chartscroll
-        width: 200
-        height: parent.height*0.5
+        width: 225
+        height: parent.height*0.9
         anchors.top: parent.top
         anchors.right: parent.right
-        anchors.topMargin: 25
-        anchors.rightMargin: 25
+        anchors.topMargin: parent.height*0.05
+        anchors.rightMargin: 15
         clip: true
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
         Column{
@@ -55,7 +55,7 @@ Item {
                     radius: 3
                     function setWidth()
                     {
-                        height = (memory.memList[index].size/memSize)*memory.height*0.75
+                        height = (memory.memList[index].size/memSize)*memory.height
                     }
                     function setTexts()
                     {

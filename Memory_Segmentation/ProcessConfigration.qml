@@ -10,11 +10,12 @@ Item {
     property int processNum: 0
     property int processNameNum: 0
     property int segmentNum: 0
-    property string processFitting: ""
     property string fitting
     property string currentProcess: ""
     property bool firstTime: true
     property var memorySegments: []
+    property alias segConfigVisibility: segmentsconfigration.visible
+    property alias currentProcessIndex: currentprocess.currentIndex
     property ListModel processSegmentsData: ListModel {
     }
     signal generateProcessConfigration()
@@ -23,11 +24,9 @@ Item {
     signal callAllocation(string process)
     signal callDeallocation(string process)
     onAllocateProcess: {
-        processSegmentsData.get(currentprocess.currentIndex).State = "Allocated"
-        setSegmentsState("Allocated")
         refreshTableSegments()
-        showState()
-        showEditProcess()
+        showState(processSegmentsData.get(currentprocess.currentIndex).State)
+        showEditProcess(processSegmentsData.get(currentprocess.currentIndex).State)
     }
     onDeallocateProcess: {
         deallocateprocess()
@@ -54,8 +53,8 @@ Item {
             }
             else
             {
-                showState()
-                showEditProcess()
+                showState(processSegmentsData.get(currentprocess.currentIndex).State)
+                showEditProcess(processSegmentsData.get(currentprocess.currentIndex).State)
             }
         }
         else
@@ -74,12 +73,22 @@ Item {
                                                                                "state":state}})
         }
     }
-    function showEditProcess()
+    function showEditProcess(state)
     {
-        deleteprocess.visible = true
-        editprocess.visible = true
-        submitsegment.visible = false
-        allocateprocess.visible = false
+        if(state === "Allocated")
+        {
+            deleteprocess.visible = true
+            editprocess.visible = false
+            submitsegment.visible = false
+            allocateprocess.visible = false
+        }
+        else if(state === "Pending")
+        {
+            deleteprocess.visible = false
+            editprocess.visible = true
+            submitsegment.visible = false
+            allocateprocess.visible = false
+        }
     }
     function hideEditProcess()
     {
@@ -88,11 +97,20 @@ Item {
         submitsegment.visible = true
         allocateprocess.visible = true
     }
-    function showState()
+    function showState(state)
     {
-        initialcolumn.visible = false
-        basecolumn.visible = true
-        statecolumn.visible = true
+        if(state === "Allocated")
+        {
+            initialcolumn.visible = false
+            basecolumn.visible = true
+            statecolumn.visible = true
+        }
+        else if(state === "Pending")
+        {
+            initialcolumn.visible = false
+            basecolumn.visible = false
+            statecolumn.visible = true
+        }
     }
     function hideState()
     {
@@ -156,6 +174,14 @@ Item {
         segmentsname.clear()
         for(var i = 0 ; i < processSegmentsData.get(currentprocess.currentIndex).Process.count ; i++)
         {
+            var segments = {Type: "",id: "",segmentName: "",state: "",algorithmType: "",base: 0,size: 0}
+            segments.Type = "segment"
+            segments.id = processSegmentsData.get(currentprocess.currentIndex).Name
+            segments.segmentName = processSegmentsData.get(currentprocess.currentIndex).Process.get(i).Segment.SegmentName
+            segments.base = processSegmentsData.get(currentprocess.currentIndex).Process.get(i).Segment.base
+            segments.size = processSegmentsData.get(currentprocess.currentIndex).Process.get(i).Segment.size
+            segments.algorithmType = processSegmentsData.get(currentprocess.currentIndex).Fitting
+            memorySegments[i] = segments
             segmentsname.append({"name":processSegmentsData.get(currentprocess.currentIndex).Process.get(i).Segment.SegmentName})
             segmentdata.append({"SegmentName":processSegmentsData.get(currentprocess.currentIndex).Process.get(i).Segment.SegmentName,
                                    "base":processSegmentsData.get(currentprocess.currentIndex).Process.get(i).Segment.base,
@@ -169,6 +195,7 @@ Item {
         var segmentsDataList = {"SegmentName": "None", "base":0, "size": 0, "Initial": "Not Initialized", "state":"None"}
         segmentsname.clear()
         segmentdata.clear()
+        memorySegments = []
         segmentNum = segmentnumber.value
         for(var j = 0 ;j < segmentNum ; j++)
         {
@@ -187,7 +214,7 @@ Item {
         {
             segmentsname.append({"name":"Seg "+(i+1)})
             segmentsDataList.SegmentName = segmentdata.get(i).SegmentName
-            segmentsDataList.base = 0//segmentdata.get(i).base
+            segmentsDataList.base = 0
             segmentsDataList.size = segmentdata.get(i).size
             segmentsDataList.Initial = segmentdata.get(i).Initial
             segmentsDataList.state = segmentdata.get(i).state
@@ -198,21 +225,7 @@ Item {
                                                                                "state":segmentsDataList.state}})
         }
         currentprocess.currentIndex = processNum - 1
-        currentProcess = currentprocess.currentText        
-    }
-    function setSegmentsList()
-    {
-        for(var i = 0 ; i < processSegmentsData.get(currentprocess.currentIndex).Process.count ; i++)
-        {
-            var segments = {Type: "",id: "",segmentName: "",state: "",algorithmType: "",base: 0,size: 0}
-            segments.Type = "segment"
-            segments.id = processSegmentsData.get(currentprocess.currentIndex).Name
-            segments.segmentName = processSegmentsData.get(currentprocess.currentIndex).Process.get(i).Segment.SegmentName
-            segments.base = processSegmentsData.get(currentprocess.currentIndex).Process.get(i).Segment.base
-            segments.size = processSegmentsData.get(currentprocess.currentIndex).Process.get(i).Segment.size
-            segments.algorithmType = processSegmentsData.get(currentprocess.currentIndex).Fitting
-            memorySegments[i] = segments
-        }
+        currentProcess = currentprocess.currentText
     }
     ListModel {
         id: processlist
@@ -311,7 +324,7 @@ Item {
     GridLayout {
         id: segmentsconfigration
         columns: 3
-        rows: 6
+        rows: 7
         columnSpacing: 5
         rowSpacing: 10
         anchors.top: basicsconfigration.bottom
@@ -398,12 +411,12 @@ Item {
                 }
                 else
                 {
-                    showEditProcess()
-                    showState()
+                    showEditProcess(processSegmentsData.get(currentprocess.currentIndex).State)
+                    showState(processSegmentsData.get(currentprocess.currentIndex).State)
                 }
                 refreshTableSegments()
-                setSegmentsList()
-                currentProcess = currentText
+                fitting = processSegmentsData.get(currentprocess.currentIndex).Fitting
+                currentProcess = processSegmentsData.get(currentprocess.currentIndex).Name
             }
         }
         CustomizingComboBox {
@@ -440,16 +453,16 @@ Item {
                     segments.Type = "segment"
                     segments.id = currentprocess.currentText
                     segments.segmentName = Number(segmentname.text) !== 0 ? segmentname.text : segmentsname.get(segmentnum.currentIndex).name
-                    segments.base = 0//Number(segmentbase.text)
+                    segments.base = 0
                     segments.size = Number(segmentsize.text)
                     segments.algorithmType = processSegmentsData.get(currentprocess.currentIndex).Fitting
                     segmentdata.set(segmentnum.currentIndex,{"SegmentName":segments.segmentName,
-                                        "base":0,//segments.base,
+                                        "base":0,
                                         "size":segments.size,
                                         "Initial":"Initialized",
                                         "state":"None"})
                     processSegmentsData.get(currentprocess.currentIndex).Process.set(segmentnum.currentIndex,{"Segment":{"SegmentName":segments.segmentName,
-                                                                                       "base":0,//segments.base,
+                                                                                       "base":0,
                                                                                        "size":segments.size,
                                                                                        "Initial":"Initialized",
                                                                                        "state":"None"}})
@@ -483,7 +496,6 @@ Item {
             onClicked: {
                 if(checkSegmentsInitialization())
                 {
-                    processFitting = processSegmentsData.get(currentprocess.currentIndex).Fitting
                     callAllocation(currentprocess.currentText)
                 }
                 else
@@ -505,8 +517,8 @@ Item {
         CustomizingButton {
             id: editprocess
             text: "Edit"
-            Layout.column: 1
-            Layout.row: 5
+            Layout.column: 0
+            Layout.row: 6
             visible: false
             onClicked: {
 
@@ -515,12 +527,11 @@ Item {
     }
     TableView {
         id: segments_table
-        width: item.width/2.5
+        width: item.width*0.4
         height: item.height*0.4
-        anchors.bottom: item.bottom
-        anchors.right: item.right
-        anchors.rightMargin: 10
-        anchors.bottomMargin: 10
+        anchors.top: segmentsconfigration.bottom
+        anchors.left: segmentsconfigration.left
+        anchors.topMargin: 30
         focus: true
         model: segmentdata
         visible: currentprocess.currentIndex != -1 && segmentsconfigration.visible ? true : false
@@ -528,15 +539,15 @@ Item {
             height: textrow.implicitHeight * 1.2
             width: textrow.implicitWidth
             color: {
-                if(styleData.row < segmentNum && segmentdata.get(styleData.row).Initial === "Initialized" && segmentdata.get(styleData.row).state === "None")
+                if(styleData.row < segmentdata.count && segmentdata.get(styleData.row).Initial === "Initialized" && segmentdata.get(styleData.row).state === "None")
                 {
                     return "gray"
                 }
-                else if(styleData.row < segmentNum && segmentdata.get(styleData.row).Initial === "Initialized" && segmentdata.get(styleData.row).state === "Allocated")
+                else if(styleData.row < segmentdata.count && segmentdata.get(styleData.row).Initial === "Initialized" && segmentdata.get(styleData.row).state === "Allocated")
                 {
                     return "green"
                 }
-                else if(styleData.row < segmentNum && segmentdata.get(styleData.row).Initial === "Initialized" && segmentdata.get(styleData.row).state === "Pending")
+                else if(styleData.row < segmentdata.count && segmentdata.get(styleData.row).Initial === "Initialized" && segmentdata.get(styleData.row).state === "Pending")
                 {
                     return "red"
                 }
