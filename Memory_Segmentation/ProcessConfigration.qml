@@ -81,14 +81,12 @@ Item {
         if(state === "Allocated")
         {
             deleteprocess.visible = true
-            editprocess.visible = false
             submitsegment.visible = false
             allocateprocess.visible = false
         }
         else if(state === "Pending")
         {
             deleteprocess.visible = false
-            editprocess.visible = true
             submitsegment.visible = false
             allocateprocess.visible = false
         }
@@ -96,7 +94,6 @@ Item {
     function hideEditProcess()
     {
         deleteprocess.visible = false
-        editprocess.visible = false
         submitsegment.visible = true
         allocateprocess.visible = true
     }
@@ -212,7 +209,7 @@ Item {
         processNameNum++
         fitting = firstfit.checked ? "firstfit" : "bestfit"
         processlist.append({"name":"P"+processNameNum})
-        processSegmentsData.append({"Process":[],"Fitting":fitting,"State": "None","Name":"P"+processNameNum})
+        processSegmentsData.append({"Process":[],"Fitting":fitting,"State": "None","Name":"P"+processNameNum,"CalledAllocation": false})
         for(var i = 0 ; i < segmentNum ; i++)
         {
             segmentsname.append({"name":"Seg "+(i+1)})
@@ -499,6 +496,7 @@ Item {
             onClicked: {
                 if(checkSegmentsInitialization())
                 {
+                    processSegmentsData.get(currentprocess.currentIndex).CalledAllocation = true
                     callAllocation(currentprocess.currentText)
                 }
                 else
@@ -515,16 +513,6 @@ Item {
             visible: false
             onClicked: {
                 callDeallocation(currentprocess.currentText)
-            }
-        }
-        CustomizingButton {
-            id: editprocess
-            text: "Edit"
-            Layout.column: 0
-            Layout.row: 6
-            visible: false
-            onClicked: {
-
             }
         }
     }

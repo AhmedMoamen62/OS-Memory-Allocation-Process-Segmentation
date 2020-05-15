@@ -50,10 +50,10 @@ Window {
                         if(processconfigration.processSegmentsData.get(j).Process.get(h).Segment.SegmentName === memoryList[i].segmentName)
                         {
                             processconfigration.processSegmentsData.get(j).Process.set(h,{"Segment":{"SegmentName":processconfigration.processSegmentsData.get(j).Process.get(h).Segment.SegmentName,
-                                                                                                                         "base":memoryList[i].base,
-                                                                                                                         "size":processconfigration.processSegmentsData.get(j).Process.get(h).Segment.size,
-                                                                                                                         "Initial":processconfigration.processSegmentsData.get(j).Process.get(h).Segment.Initial,
-                                                                                                                         "state":processconfigration.processSegmentsData.get(j).Process.get(h).Segment.state}})
+                                                                                               "base":memoryList[i].base,
+                                                                                               "size":processconfigration.processSegmentsData.get(j).Process.get(h).Segment.size,
+                                                                                               "Initial":processconfigration.processSegmentsData.get(j).Process.get(h).Segment.Initial,
+                                                                                               "state":processconfigration.processSegmentsData.get(j).Process.get(h).Segment.state}})
                             break
                         }
                     }
@@ -67,41 +67,29 @@ Window {
         // search for all process states
         for(var i = 0 ; i < processconfigration.processSegmentsData.count ; i++) // process list
         {
-             var state = true
-             for(var j = 0 ; j < Mma.pendingList.length ; j++) // process pending list
-             {
-                  // check if pendingList id is same with the process name
-                 if(processconfigration.processSegmentsData.get(i).Name === Mma.pendingList[j][0].id)
-                 {
-                     processconfigration.processSegmentsData.get(i).State = "Pending"
-                     processconfigration.setSegmentsState("Pending",i)
-                     state = false
-                     break
-                 }
-             }
-             if(state)
-             {
-                 processconfigration.processSegmentsData.get(i).State = "Allocated"
-                 processconfigration.setSegmentsState("Allocated",i)
-             }
+            var called = processconfigration.processSegmentsData.get(i).CalledAllocation
+            if(called)
+            {
+                var state = true
+                for(var j = 0 ; j < Mma.pendingList.length ; j++) // process pending list
+                {
+                    // check if pendingList id is same with the process name
+                    if(processconfigration.processSegmentsData.get(i).Name === Mma.pendingList[j][0].id)
+                    {
+                        processconfigration.processSegmentsData.get(i).State = "Pending"
+                        processconfigration.setSegmentsState("Pending",i)
+                        state = false
+                        break
+                    }
+                }
+                if(state)
+                {
+                    processconfigration.processSegmentsData.get(i).State = "Allocated"
+                    processconfigration.setSegmentsState("Allocated",i)
+                }
+            }
         }
     }
-//    function setProcessesState()
-//    {
-//        // search for each allocated process in pendingList
-//        for(var i = 0 ; i < Mma.pendingList.length ; i++) // i memlist
-//        {
-//            // check if memlist id is same with the process name
-//            if(processconfigration.processSegmentsData.get(indexProcess).Name === Mma.pendingList[i][0].id)
-//            {
-//                processconfigration.processSegmentsData.get(indexProcess).State = "Pending"
-//                processconfigration.setSegmentsState("Pending")
-//                return
-//            }
-//        }
-//        processconfigration.processSegmentsData.get(indexProcess).State = "Allocated"
-//        processconfigration.setSegmentsState("Allocated")
-//    }
     function convertNameToIndex(name)
     {
         for(var i = 0 ; i < processconfigration.processSegmentsData.count ; i++)
