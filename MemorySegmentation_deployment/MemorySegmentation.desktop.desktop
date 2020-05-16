@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=MemorySegmentation
+Comment=Simulate the allocation in the memory of processes with segmentation technique
+Exec=MemorySegmentation
+Icon=ram
+Categories=Application;
+X-AppImage-Version=
+Name[en_US]=MemorySegmentation.desktop.desktop
