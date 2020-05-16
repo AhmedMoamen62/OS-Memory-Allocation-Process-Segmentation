@@ -1,6 +1,6 @@
 ﻿var memList = [];
 let listOfHoles = [];
-var memorySize = 100
+var memorySize = 0
 let listOfSegments= [];
 let tempHoleList = [] ;
 var pendingList = [] ;

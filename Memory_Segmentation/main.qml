@@ -24,6 +24,7 @@ Window {
         holesconfigration.visible = false
         processconfigration.visible = true
         back_rec.visible = true
+        Mma.memorySize = memorySize
         memoryList = Mma.initializeMemory(holesList)
         setMemory()
     }

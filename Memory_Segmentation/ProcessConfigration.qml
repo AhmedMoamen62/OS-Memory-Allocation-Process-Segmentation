@@ -8,7 +8,6 @@ import QtQml.Models 2.14
 Item {
     id: item
     property int processNum: 0
-    property int processNameNum: 0
     property int segmentNum: 0
     property string fitting
     property string currentProcess: ""
@@ -27,6 +26,10 @@ Item {
         refreshTableSegments()
         showState(processSegmentsData.get(currentprocess.currentIndex).State)
         showEditProcess(processSegmentsData.get(currentprocess.currentIndex).State)
+        if(processSegmentsData.get(currentprocess.currentIndex).State === "Pending")
+        {
+            pendingprocess.open()
+        }
     }
     onDeallocateProcess: {
         deallocateprocess(index)
@@ -36,6 +39,26 @@ Item {
     }
     function isInt(n){
         return Number(n) === n && n % 1 === 0 && Number(n) !== 0;
+    }
+    function setProcessName()
+    {
+        var name = "P1"
+        for(var i = 0 ; i < processSegmentsData.count ; i++)
+        {
+            for(var j = 0 ; j < processSegmentsData.count ; j++)
+            {
+                if(processSegmentsData.get(j).Name === name)
+                {
+                    break
+                }
+                if(j === processSegmentsData.count - 1)
+                {
+                    return name
+                }
+            }
+            name = "P" + (i + 2)
+        }
+        return name
     }
     function deallocateprocess(index)
     {
@@ -47,6 +70,8 @@ Item {
             if(processNum > 0)
             {
                 currentprocess.currentIndex = 0
+                currentProcess = currentprocess.currentText
+                fitting = processSegmentsData.get(currentprocess.currentIndex).Fitting
                 refreshTableSegments()
                 if(processSegmentsData.get(currentprocess.currentIndex).State === "None")
                 {
@@ -63,6 +88,10 @@ Item {
             {
                 showDefaultConfigration()
             }
+        }
+        else
+        {
+            refreshTableSegments()
         }
     }
     function setSegmentsState(state,index)
@@ -159,7 +188,6 @@ Item {
         segmentdata.clear()
         memorySegments = []
         processNum = 0
-        processNameNum = 0
         segmentNum = 0
         segmentsconfigration.visible = false
         segmentnumber.visible = false
@@ -172,6 +200,7 @@ Item {
     {
         segmentdata.clear()
         segmentsname.clear()
+        memorySegments = []
         for(var i = 0 ; i < processSegmentsData.get(currentprocess.currentIndex).Process.count ; i++)
         {
             var segments = {Type: "",id: "",segmentName: "",state: "",algorithmType: "",base: 0,size: 0}
@@ -206,10 +235,9 @@ Item {
                                    "state":"None"})
         }
         processNum++
-        processNameNum++
         fitting = firstfit.checked ? "firstfit" : "bestfit"
-        processlist.append({"name":"P"+processNameNum})
-        processSegmentsData.append({"Process":[],"Fitting":fitting,"State": "None","Name":"P"+processNameNum,"CalledAllocation": false})
+        processlist.append({"name":setProcessName()})
+        processSegmentsData.append({"Process":[],"Fitting":fitting,"State": "None","Name":setProcessName(),"CalledAllocation": false})
         for(var i = 0 ; i < segmentNum ; i++)
         {
             segmentsname.append({"name":"Seg "+(i+1)})
@@ -235,6 +263,13 @@ Item {
     }
     ListModel {
         id: segmentdata
+    }
+    MessageDialog {
+        id: pendingprocess
+        title: "Pending Process"
+        text: "There's no enough space to allocate this process, deallocate enough space first and it will allocate in memory automatically"
+        icon: StandardIcon.Information
+        standardButtons: StandardButton.Ok
     }
     GridLayout {
         id: basicsconfigration
