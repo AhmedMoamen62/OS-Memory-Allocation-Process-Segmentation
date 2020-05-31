@@ -38,25 +38,24 @@ Item {
                 Rectangle{
                     id: memoryRect
                     width: 150
+                    border.color: "#A58161"
                     color: {
                         if(memory.memList[index].id.substr(0,4) === "Hole")
                         {
-                            return "blue"
+                            return "#405E6A"
                         }
                         else if(memory.memList[index].id.substr(0,4) === "Rest")
                         {
-                            return "red"
+                            return "#254535"
                         }
                         else
                         {
-                            return "orange"
+                            return "#C5A181"
                         }
                     }
-                    border.color: "grey"
-                    radius: 3
                     function setWidth()
                     {
-                        height = (memory.memList[index].size/memSize)*memory.height
+                        height = (memory.memList[index].size/memSize)*memory.height*1.25
                     }
                     function setTexts()
                     {
@@ -113,11 +112,11 @@ Item {
                         onExited: {
                             if(memory.memList[index].Type === "segment")
                             {
-                                parent.color = "orange"
+                                parent.color = "#C5A181"
                             }
                             if(memory.memList[index].Type === "restricted")
                             {
-                                parent.color = "red"
+                                parent.color = "#254535"
                             }
                         }
                         onDoubleClicked: {

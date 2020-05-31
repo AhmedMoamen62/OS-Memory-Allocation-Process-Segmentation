@@ -339,6 +339,13 @@ Item {
         icon: StandardIcon.Information
         standardButtons: StandardButton.Ok
     }
+    MessageDialog {
+        id: holessize
+        title: "Holes Size"
+        text: "Total size of holes is more than the total memory size !"
+        icon: StandardIcon.Information
+        standardButtons: StandardButton.Ok
+    }
     CustomizingButton {
         id: submitconfigrations
         text: "Submit Configrations"
@@ -348,8 +355,10 @@ Item {
         anchors.rightMargin: 30
         visible: false
         onClicked: {
+            var sum = 0
             for(var i = 0 ; i < holesNum; i++)
             {
+                sum = sum + holesdata.get(i).size
                 if(holesdata.get(i).Initial === "Not Initialized")
                 {
                     holesnotfinished.open()
@@ -357,7 +366,14 @@ Item {
                 }
                 if(i === holesdata.count - 1)
                 {
-                    holesConfigrationFinished()
+                    if(sum > memSize)
+                    {
+                        holessize.open()
+                    }
+                    else
+                    {
+                       holesConfigrationFinished()
+                    }
                 }
             }
         }

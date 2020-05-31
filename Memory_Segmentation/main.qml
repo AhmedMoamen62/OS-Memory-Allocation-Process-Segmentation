@@ -143,7 +143,7 @@ Window {
     Rectangle{
         id: memorysize
         color: "black"
-        width: 140
+        width: 150
         height: 40
         anchors.left: parent.left
         anchors.bottom: parent.bottom
@@ -163,7 +163,7 @@ Window {
     Rectangle{
         id: processfitting
         color: "black"
-        width: 140
+        width: 150
         height: 40
         anchors.left: memorysize.right
         anchors.bottom: parent.bottom
